@@ -1,0 +1,15 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(netstat -ano)",
+      "Bash(findstr :8082)",
+      "Bash(findstr \":8081 :8082\")",
+      "Bash(taskkill /PID 39912 /F)",
+      "Bash(taskkill /PID 62856 /F)",
+      "Bash(cmd:*)",
+      "Bash(mysql:*)",
+      "Bash(mvn compile:*)",
+      "Bash(curl:*)"
+    ]
+  }
+}
