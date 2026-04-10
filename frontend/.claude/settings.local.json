@@ -1,0 +1,16 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(curl -s http://localhost:8082/api/v3/api-docs)",
+      "Bash(curl:*)",
+      "Read(//d/项目/openclaw/test/online-mall/**)",
+      "Bash(dir \"D:\\\\项目\\\\openclaw\\\\test\\\\online-mall\")",
+      "Bash(npm install:*)",
+      "Bash(npm run:*)",
+      "Bash(taskkill /F /IM node.exe)",
+      "Bash(netstat -ano)",
+      "Bash(findstr \":8080\\\\|:8081\\\\|:8082\\\\|:8083\\\\|:8084\")",
+      "Bash(python -m json.tool)"
+    ]
+  }
+}
