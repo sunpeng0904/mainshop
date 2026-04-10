@@ -131,8 +131,8 @@ const request = {
     return service.put(url, data, config)
   },
   
-  delete(url, params = {}, config = {}) {
-    return service.delete(url, { params, ...config })
+  delete(url, data = {}, config = {}) {
+    return service.delete(url, { data, ...config })
   },
   
   patch(url, data = {}, config = {}) {

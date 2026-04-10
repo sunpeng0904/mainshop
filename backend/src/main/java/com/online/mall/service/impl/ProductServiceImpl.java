@@ -279,4 +279,42 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product> impl
         }
         return voList;
     }
+
+    @Override
+    @Transactional
+    public void batchPublish(List<Long> productIds) {
+        log.info("批量上架商品: productIds={}", productIds);
+        if (productIds == null || productIds.isEmpty()) {
+            return;
+        }
+        List<Product> products = listByIds(productIds);
+        for (Product product : products) {
+            product.setStatus(1);
+        }
+        updateBatchById(products);
+    }
+
+    @Override
+    @Transactional
+    public void batchUnpublish(List<Long> productIds) {
+        log.info("批量下架商品: productIds={}", productIds);
+        if (productIds == null || productIds.isEmpty()) {
+            return;
+        }
+        List<Product> products = listByIds(productIds);
+        for (Product product : products) {
+            product.setStatus(0);
+        }
+        updateBatchById(products);
+    }
+
+    @Override
+    @Transactional
+    public void batchDelete(List<Long> productIds) {
+        log.info("批量删除商品: productIds={}", productIds);
+        if (productIds == null || productIds.isEmpty()) {
+            return;
+        }
+        removeByIds(productIds);
+    }
 }

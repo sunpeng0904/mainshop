@@ -109,6 +109,36 @@ const routes = [
           icon: 'Monitor',
           requiresAdmin: true
         }
+      },
+      {
+        path: 'products',
+        name: 'AdminProducts',
+        component: () => import('@/views/admin/products/index.vue'),
+        meta: {
+          title: '商品列表',
+          icon: 'Goods',
+          requiresAdmin: true
+        }
+      },
+      {
+        path: 'products/add',
+        name: 'AdminProductAdd',
+        component: () => import('@/views/admin/products/edit.vue'),
+        meta: {
+          title: '新增商品',
+          hideInMenu: true,
+          requiresAdmin: true
+        }
+      },
+      {
+        path: 'products/edit/:id',
+        name: 'AdminProductEdit',
+        component: () => import('@/views/admin/products/edit.vue'),
+        meta: {
+          title: '编辑商品',
+          hideInMenu: true,
+          requiresAdmin: true
+        }
       }
     ]
   },
@@ -149,8 +179,8 @@ router.beforeEach((to, from, next) => {
 
     // 检查是否需要管理员权限
     if (to.meta.requiresAdmin) {
-      const userInfo = store.state.user.userInfo
-      if (!userInfo || userInfo.role !== 'admin') {
+      const isAdmin = store.getters['user/isAdmin']
+      if (!isAdmin) {
         ElMessage.error('权限不足')
         next('/home')
         return

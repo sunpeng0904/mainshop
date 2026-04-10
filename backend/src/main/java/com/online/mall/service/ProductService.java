@@ -82,4 +82,19 @@ public interface ProductService extends IService<Product> {
      * 批量查询商品
      */
     List<ProductVO> batchGetProducts(List<Long> productIds);
+
+    /**
+     * 批量上架商品
+     */
+    void batchPublish(List<Long> productIds);
+
+    /**
+     * 批量下架商品
+     */
+    void batchUnpublish(List<Long> productIds);
+
+    /**
+     * 批量删除商品
+     */
+    void batchDelete(List<Long> productIds);
 }
