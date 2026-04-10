@@ -1,6 +1,7 @@
 package com.online.mall.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.online.mall.common.BusinessException;
 import com.online.mall.dto.UserLoginDTO;
@@ -25,6 +26,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.Arrays;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * 用户服务实现
@@ -249,5 +252,115 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
             userVO.setRoles(Arrays.asList("user"));
         }
         return userVO;
+    }
+
+    // ============== 管理员接口实现 ==============
+
+    @Override
+    public Page<UserVO> getAdminUserList(String username, String phone, Integer status, Integer pageNum, Integer pageSize) {
+        log.info("管理员获取用户列表: username={}, phone={}, status={}", username, phone, status);
+
+        Page<User> page = new Page<>(pageNum, pageSize);
+
+        QueryWrapper<User> wrapper = new QueryWrapper<User>()
+                .orderByDesc("create_time");
+
+        if (username != null && !username.isEmpty()) {
+            wrapper.like("username", username);
+        }
+        if (phone != null && !phone.isEmpty()) {
+            wrapper.like("phone", phone);
+        }
+        if (status != null) {
+            wrapper.eq("status", status);
+        }
+
+        Page<User> userPage = page(page, wrapper);
+
+        Page<UserVO> voPage = new Page<>(userPage.getCurrent(), userPage.getSize(), userPage.getTotal());
+        List<UserVO> voList = new ArrayList<>();
+
+        for (User user : userPage.getRecords()) {
+            voList.add(convertToVO(user));
+        }
+
+        voPage.setRecords(voList);
+        return voPage;
+    }
+
+    @Override
+    public UserVO getAdminUserById(Long userId) {
+        log.info("管理员获取用户详情: userId={}", userId);
+
+        User user = getById(userId);
+        if (user == null) {
+            throw new BusinessException("user.not.found");
+        }
+        return convertToVO(user);
+    }
+
+    @Override
+    @Transactional
+    public void disableUser(Long userId) {
+        log.info("禁用用户: userId={}", userId);
+
+        User user = getById(userId);
+        if (user == null) {
+            throw new BusinessException("user.not.found");
+        }
+
+        // 不能禁用admin用户
+        if ("admin".equals(user.getUsername())) {
+            throw new BusinessException("不能禁用管理员账户");
+        }
+
+        user.setStatus(0);
+        updateById(user);
+    }
+
+    @Override
+    @Transactional
+    public void enableUser(Long userId) {
+        log.info("启用用户: userId={}", userId);
+
+        User user = getById(userId);
+        if (user == null) {
+            throw new BusinessException("user.not.found");
+        }
+
+        user.setStatus(1);
+        updateById(user);
+    }
+
+    @Override
+    @Transactional
+    public void adminResetPassword(Long userId, String newPassword) {
+        log.info("管理员重置用户密码: userId={}", userId);
+
+        User user = getById(userId);
+        if (user == null) {
+            throw new BusinessException("user.not.found");
+        }
+
+        user.setPassword(passwordEncoder.encode(newPassword));
+        updateById(user);
+    }
+
+    @Override
+    public UserStatisticsVO getUserStatistics() {
+        log.info("获取用户统计");
+
+        UserStatisticsVO vo = new UserStatisticsVO();
+
+        vo.setTotalUsers(Math.toIntExact(count()));
+        vo.setActiveUsers(Math.toIntExact(count(new QueryWrapper<User>().eq("status", 1))));
+        vo.setDisabledUsers(Math.toIntExact(count(new QueryWrapper<User>().eq("status", 0))));
+
+        // 今日新增用户
+        LocalDateTime todayStart = LocalDateTime.now().withHour(0).withMinute(0).withSecond(0).withNano(0);
+        vo.setTodayNewUsers(Math.toIntExact(count(new QueryWrapper<User>()
+                .ge("create_time", todayStart))));
+
+        return vo;
     }
 }

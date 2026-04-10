@@ -41,7 +41,7 @@
               <h4>{{ item.productName }}</h4>
               <p class="goods-price">¥{{ item.price }} × {{ item.quantity }}</p>
             </div>
-            <span class="goods-total">¥{{ item.totalAmount }}</span>
+            <span class="goods-total">¥{{ item.subtotal }}</span>
           </div>
         </div>
 

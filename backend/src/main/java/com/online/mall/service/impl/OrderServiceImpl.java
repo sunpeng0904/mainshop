@@ -8,6 +8,7 @@ import com.online.mall.dto.OrderCreateDTO;
 import com.online.mall.dto.OrderQueryDTO;
 import com.online.mall.entity.*;
 import com.online.mall.mapper.OrderMapper;
+import com.online.mall.mapper.UserMapper;
 import com.online.mall.service.*;
 import com.online.mall.vo.CartVO;
 import com.online.mall.vo.OrderItemVO;
@@ -40,6 +41,9 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 
     @Autowired
     private OrderItemService orderItemService;
+
+    @Autowired
+    private UserMapper userMapper;
 
     @Override
     @Transactional
@@ -285,6 +289,147 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         return vo;
     }
 
+    // ============== 管理员接口实现 ==============
+
+    @Override
+    public Page<OrderVO> getAdminOrderList(OrderQueryDTO queryDTO) {
+        log.info("管理员获取订单列表: status={}", queryDTO.getStatus());
+
+        Page<Order> page = new Page<>(queryDTO.getPageNum(), queryDTO.getPageSize());
+
+        QueryWrapper<Order> wrapper = new QueryWrapper<Order>()
+                .orderByDesc("create_time");
+
+        if (queryDTO.getStatus() != null) {
+            wrapper.eq("status", queryDTO.getStatus());
+        }
+        if (queryDTO.getOrderNo() != null && !queryDTO.getOrderNo().isEmpty()) {
+            wrapper.like("order_no", queryDTO.getOrderNo());
+        }
+
+        Page<Order> orderPage = page(page, wrapper);
+
+        Page<OrderVO> voPage = new Page<>(orderPage.getCurrent(), orderPage.getSize(), orderPage.getTotal());
+        List<OrderVO> voList = new ArrayList<>();
+
+        for (Order order : orderPage.getRecords()) {
+            List<OrderItem> orderItems = orderItemService.list(new QueryWrapper<OrderItem>()
+                    .eq("order_id", order.getId()));
+            voList.add(convertToVO(order, orderItems));
+        }
+
+        voPage.setRecords(voList);
+        return voPage;
+    }
+
+    @Override
+    public OrderVO getAdminOrderById(Long orderId) {
+        log.info("管理员获取订单详情: orderId={}", orderId);
+
+        Order order = getById(orderId);
+        if (order == null) {
+            throw new BusinessException("order.not.found");
+        }
+
+        List<OrderItem> orderItems = orderItemService.list(new QueryWrapper<OrderItem>()
+                .eq("order_id", orderId));
+
+        return convertToVO(order, orderItems);
+    }
+
+    @Override
+    @Transactional
+    public void shipOrder(Long orderId, String logisticsCompany, String logisticsNo) {
+        log.info("发货: orderId={}, logisticsCompany={}, logisticsNo={}", orderId, logisticsCompany, logisticsNo);
+
+        Order order = getById(orderId);
+        if (order == null) {
+            throw new BusinessException("order.not.found");
+        }
+
+        if (order.getStatus() != Order.STATUS_PENDING_SHIPMENT) {
+            throw new BusinessException("订单状态不允许发货");
+        }
+
+        order.setStatus(Order.STATUS_SHIPPED);
+        order.setDeliveryTime(LocalDateTime.now());
+        // 可以添加物流信息字段
+        updateById(order);
+    }
+
+    @Override
+    @Transactional
+    public void adminCancelOrder(Long orderId, String reason) {
+        log.info("管理员取消订单: orderId={}, reason={}", orderId, reason);
+
+        Order order = getById(orderId);
+        if (order == null) {
+            throw new BusinessException("order.not.found");
+        }
+
+        // 已发货或已完成的订单不能取消
+        if (order.getStatus() == Order.STATUS_SHIPPED || order.getStatus() == Order.STATUS_COMPLETED) {
+            throw new BusinessException("订单状态不允许取消");
+        }
+
+        // 如果是待付款或待发货状态，需要恢复库存
+        if (order.getStatus() == Order.STATUS_PENDING_PAYMENT || order.getStatus() == Order.STATUS_PENDING_SHIPMENT) {
+            List<OrderItem> orderItems = orderItemService.list(new QueryWrapper<OrderItem>()
+                    .eq("order_id", orderId));
+
+            for (OrderItem item : orderItems) {
+                Product product = productService.getById(item.getProductId());
+                if (product != null) {
+                    product.setStock(product.getStock() + item.getQuantity());
+                    product.setSales(product.getSales() - item.getQuantity());
+                    productService.updateById(product);
+                }
+            }
+        }
+
+        order.setStatus(Order.STATUS_CANCELLED);
+        order.setCancelReason(reason);
+        order.setCancelTime(LocalDateTime.now());
+        updateById(order);
+    }
+
+    @Override
+    @Transactional
+    public void adminDeleteOrder(Long orderId) {
+        log.info("管理员删除订单: orderId={}", orderId);
+
+        Order order = getById(orderId);
+        if (order == null) {
+            throw new BusinessException("order.not.found");
+        }
+
+        // 删除订单项
+        orderItemService.remove(new QueryWrapper<OrderItem>().eq("order_id", orderId));
+        // 删除订单
+        removeById(orderId);
+    }
+
+    @Override
+    public OrderStatisticsVO getAdminOrderStatistics() {
+        log.info("管理员获取订单统计");
+
+        OrderStatisticsVO vo = new OrderStatisticsVO();
+
+        vo.setTotalOrders(Math.toIntExact(count()));
+        vo.setPendingPayment(Math.toIntExact(count(new QueryWrapper<Order>()
+                .eq("status", Order.STATUS_PENDING_PAYMENT))));
+        vo.setPendingShipment(Math.toIntExact(count(new QueryWrapper<Order>()
+                .eq("status", Order.STATUS_PENDING_SHIPMENT))));
+        vo.setShipped(Math.toIntExact(count(new QueryWrapper<Order>()
+                .eq("status", Order.STATUS_SHIPPED))));
+        vo.setCompleted(Math.toIntExact(count(new QueryWrapper<Order>()
+                .eq("status", Order.STATUS_COMPLETED))));
+        vo.setCancelled(Math.toIntExact(count(new QueryWrapper<Order>()
+                .eq("status", Order.STATUS_CANCELLED))));
+
+        return vo;
+    }
+
     /**
      * 生成订单编号
      */
@@ -307,6 +452,14 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         // 支付方式名称
         if (order.getPayType() != null) {
             vo.setPayTypeName(order.getPayType() == 1 ? "支付宝" : "微信");
+        }
+
+        // 查询用户名
+        if (order.getUserId() != null) {
+            User user = userMapper.selectById(order.getUserId());
+            if (user != null) {
+                vo.setUsername(user.getUsername());
+            }
         }
 
         // 订单项

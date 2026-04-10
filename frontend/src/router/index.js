@@ -139,6 +139,26 @@ const routes = [
           hideInMenu: true,
           requiresAdmin: true
         }
+      },
+      {
+        path: 'orders',
+        name: 'AdminOrders',
+        component: () => import('@/views/admin/orders/index.vue'),
+        meta: {
+          title: '订单列表',
+          icon: 'Document',
+          requiresAdmin: true
+        }
+      },
+      {
+        path: 'users',
+        name: 'AdminUsers',
+        component: () => import('@/views/admin/users/index.vue'),
+        meta: {
+          title: '用户列表',
+          icon: 'User',
+          requiresAdmin: true
+        }
       }
     ]
   },

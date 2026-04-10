@@ -54,6 +54,38 @@ public interface OrderService extends IService<Order> {
      */
     OrderStatisticsVO getOrderStatistics(Long userId);
 
+    // ============== 管理员接口 ==============
+
+    /**
+     * 管理员获取订单列表
+     */
+    Page<OrderVO> getAdminOrderList(OrderQueryDTO queryDTO);
+
+    /**
+     * 管理员获取订单详情
+     */
+    OrderVO getAdminOrderById(Long orderId);
+
+    /**
+     * 管理员发货
+     */
+    void shipOrder(Long orderId, String logisticsCompany, String logisticsNo);
+
+    /**
+     * 管理员取消订单
+     */
+    void adminCancelOrder(Long orderId, String reason);
+
+    /**
+     * 管理员删除订单
+     */
+    void adminDeleteOrder(Long orderId);
+
+    /**
+     * 管理员获取订单统计
+     */
+    OrderStatisticsVO getAdminOrderStatistics();
+
     /**
      * 订单统计VO
      */

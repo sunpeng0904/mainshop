@@ -93,11 +93,15 @@
         <el-table-column label="状态" width="100">
           <template #default="{ row }">
             <el-tag :type="getStatusType(row.status)" size="small">
-              {{ row.statusText }}
+              {{ row.statusName }}
             </el-tag>
           </template>
         </el-table-column>
-        <el-table-column prop="createTime" label="创建时间" />
+        <el-table-column prop="createTime" label="创建时间">
+          <template #default="{ row }">
+            {{ row.createTime ? row.createTime.replace('T', ' ').slice(0, 19) : '' }}
+          </template>
+        </el-table-column>
       </el-table>
     </div>
   </div>
@@ -129,7 +133,7 @@ const getStatusType = (status) => {
 const fetchRecentOrders = async () => {
   try {
     const response = await getOrderList({ pageNum: 1, pageSize: 5 })
-    recentOrders.value = response.data.list
+    recentOrders.value = response.data.records || response.data.list || []
   } catch (error) {
     console.error('获取订单失败:', error)
   }
