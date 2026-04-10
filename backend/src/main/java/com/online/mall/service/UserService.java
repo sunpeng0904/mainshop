@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import com.online.mall.entity.User;
 import com.online.mall.dto.UserLoginDTO;
 import com.online.mall.dto.UserRegisterDTO;
+import com.online.mall.dto.UserUpdateDTO;
 import com.online.mall.vo.UserVO;
 
 /**
@@ -29,7 +30,7 @@ public interface UserService extends IService<User> {
     /**
      * 更新用户信息
      */
-    UserVO updateUserInfo(Long userId, UserRegisterDTO updateDTO);
+    UserVO updateUserInfo(Long userId, UserUpdateDTO updateDTO);
     
     /**
      * 修改密码

@@ -5,6 +5,7 @@ import com.online.mall.dto.ChangePasswordDTO;
 import com.online.mall.dto.ResetPasswordDTO;
 import com.online.mall.dto.UserLoginDTO;
 import com.online.mall.dto.UserRegisterDTO;
+import com.online.mall.dto.UserUpdateDTO;
 import com.online.mall.service.UserService;
 import com.online.mall.vo.UserVO;
 import io.swagger.v3.oas.annotations.Operation;
@@ -59,7 +60,7 @@ public class UserController {
     @Operation(summary = "更新用户信息")
     @PutMapping("/info")
     public Result<UserVO> updateUserInfo(HttpServletRequest request,
-                                        @Valid @RequestBody UserRegisterDTO updateDTO) {
+                                        @Valid @RequestBody UserUpdateDTO updateDTO) {
         Long userId = (Long) request.getAttribute("userId");
         if (userId == null) {
             return Result.unauthorized("用户未登录");

@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.online.mall.common.BusinessException;
 import com.online.mall.dto.UserLoginDTO;
 import com.online.mall.dto.UserRegisterDTO;
+import com.online.mall.dto.UserUpdateDTO;
 import com.online.mall.entity.User;
 import com.online.mall.mapper.UserMapper;
 import com.online.mall.service.UserService;
@@ -125,35 +126,57 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     
     @Override
     @Transactional
-    public UserVO updateUserInfo(Long userId, UserRegisterDTO updateDTO) {
+    public UserVO updateUserInfo(Long userId, UserUpdateDTO updateDTO) {
         User user = getById(userId);
         if (user == null) {
             throw new BusinessException("user.not.found");
         }
 
-        // 更新用户信息
+        // 更新用户名
+        if (updateDTO.getUsername() != null && !updateDTO.getUsername().equals(user.getUsername())) {
+            if (checkUsernameExists(updateDTO.getUsername())) {
+                throw new BusinessException("user.username.exists");
+            }
+            user.setUsername(updateDTO.getUsername());
+        }
+
+        // 更新密码
+        if (updateDTO.getPassword() != null) {
+            if (!updateDTO.getPassword().equals(updateDTO.getConfirmPassword())) {
+                throw new BusinessException("user.password.mismatch");
+            }
+            user.setPassword(passwordEncoder.encode(updateDTO.getPassword()));
+        }
+
+        // 更新昵称
         if (updateDTO.getNickname() != null) {
             user.setNickname(updateDTO.getNickname());
         }
+
+        // 更新邮箱
         if (updateDTO.getEmail() != null && !updateDTO.getEmail().equals(user.getEmail())) {
             if (checkEmailExists(updateDTO.getEmail())) {
                 throw new BusinessException("user.email.exists");
             }
             user.setEmail(updateDTO.getEmail());
         }
+
+        // 更新手机号
         if (updateDTO.getPhone() != null && !updateDTO.getPhone().equals(user.getPhone())) {
             if (checkPhoneExists(updateDTO.getPhone())) {
                 throw new BusinessException("user.phone.exists");
             }
             user.setPhone(updateDTO.getPhone());
         }
+
+        // 更新性别
         if (updateDTO.getGender() != null) {
             user.setGender(updateDTO.getGender());
         }
-        
+
         updateById(user);
         log.info("更新用户信息成功: {}", userId);
-        
+
         return convertToVO(user);
     }
     
