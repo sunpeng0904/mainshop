@@ -13,6 +13,14 @@ module.exports = defineConfig({
       '/api': {
         target: 'http://localhost:8082',
         changeOrigin: true
+      },
+      '/uploads': {
+        target: 'http://localhost:8082',
+        changeOrigin: true
+      },
+      '/images': {
+        target: 'http://localhost:8082',
+        changeOrigin: true
       }
     }
   },

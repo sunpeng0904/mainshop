@@ -109,14 +109,17 @@
 
 <script setup>
 import { ref, reactive, onMounted } from 'vue'
-import { getOrderList, getOrderStatusMap } from '@/api/order'
+import { getOrderStatusMap } from '@/api/order'
+import { getAdminOrderList, getOrderStatistics } from '@/api/admin/order'
+import { getUserStatistics } from '@/api/admin/user'
+import { getAdminProductList } from '@/api/admin/product'
 
 // 统计数据
 const stats = reactive({
-  userCount: 156,
-  productCount: 89,
-  orderCount: 1234,
-  totalSales: '98,765.00'
+  userCount: 0,
+  productCount: 0,
+  orderCount: 0,
+  totalSales: '0.00'
 })
 
 // 最近订单
@@ -129,10 +132,29 @@ const getStatusType = (status) => {
   return statusMap[status]?.type || 'info'
 }
 
+// 获取统计数据
+const fetchStatistics = async () => {
+  try {
+    // 获取用户统计
+    const userRes = await getUserStatistics()
+    stats.userCount = userRes.data?.totalUsers || 0
+
+    // 获取商品统计
+    const productRes = await getAdminProductList({ pageNum: 1, pageSize: 1 })
+    stats.productCount = productRes.data?.total || 0
+
+    // 获取订单统计
+    const orderRes = await getOrderStatistics()
+    stats.orderCount = orderRes.data?.totalOrders || 0
+  } catch (error) {
+    console.error('获取统计失败:', error)
+  }
+}
+
 // 获取最近订单
 const fetchRecentOrders = async () => {
   try {
-    const response = await getOrderList({ pageNum: 1, pageSize: 5 })
+    const response = await getAdminOrderList({ pageNum: 1, pageSize: 5 })
     recentOrders.value = response.data.records || response.data.list || []
   } catch (error) {
     console.error('获取订单失败:', error)
@@ -140,6 +162,7 @@ const fetchRecentOrders = async () => {
 }
 
 onMounted(() => {
+  fetchStatistics()
   fetchRecentOrders()
 })
 </script>

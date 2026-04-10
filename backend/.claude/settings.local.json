@@ -9,7 +9,8 @@
       "Bash(cmd:*)",
       "Bash(mysql:*)",
       "Bash(mvn compile:*)",
-      "Bash(curl:*)"
+      "Bash(curl:*)",
+      "Read(//d/项目/openclaw/test/online-mall/**)"
     ]
   }
 }

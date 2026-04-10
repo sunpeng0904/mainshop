@@ -42,7 +42,7 @@
 import { computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
-import { getImageUrl } from '@/utils/image'
+import { getImageUrl, getDefaultImage } from '@/utils/image'
 
 const { t } = useI18n()
 const router = useRouter()
@@ -61,7 +61,7 @@ const productImage = computed(() => {
     const firstImage = Array.isArray(images) ? images[0] : images
     return getImageUrl(firstImage)
   }
-  return 'https://via.placeholder.com/400x400?text=No+Image'
+  return getDefaultImage()
 })
 
 // 是否有折扣

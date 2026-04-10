@@ -97,11 +97,12 @@
             {{ formatTime(row.lastLoginTime) || '-' }}
           </template>
         </el-table-column>
-        <el-table-column label="操作" width="180" fixed="right">
+        <el-table-column label="操作" width="220" fixed="right">
           <template #default="{ row }">
             <el-button link type="primary" @click="handleDetail(row)">详情</el-button>
+            <el-button link type="info" @click="handleAssignRole(row)">角色</el-button>
             <el-button
-              v-if="row.status === 1 && !row.roles?.includes('admin')"
+              v-if="row.status === 1"
               link
               type="warning"
               @click="handleDisable(row)"
@@ -117,7 +118,6 @@
               启用
             </el-button>
             <el-button
-              v-if="!row.roles?.includes('admin')"
               link
               type="danger"
               @click="handleResetPassword(row)"
@@ -201,6 +201,31 @@
         <el-button type="primary" @click="confirmResetPassword">确认重置</el-button>
       </template>
     </el-dialog>
+
+    <!-- 分配角色对话框 -->
+    <el-dialog v-model="roleVisible" title="分配角色" width="500px">
+      <div class="role-dialog-content">
+        <div class="user-info">
+          <span>用户：{{ roleForm.username }}</span>
+        </div>
+        <el-checkbox-group v-model="roleForm.selectedRoleIds" class="role-checkbox-group">
+          <el-checkbox
+            v-for="role in allRoles"
+            :key="role.id"
+            :label="role.id"
+            :value="role.id"
+            class="role-checkbox"
+          >
+            <span class="role-name">{{ role.roleName }}</span>
+            <span class="role-code">({{ role.roleCode }})</span>
+          </el-checkbox>
+        </el-checkbox-group>
+      </div>
+      <template #footer>
+        <el-button @click="roleVisible = false">取消</el-button>
+        <el-button type="primary" @click="confirmAssignRole">确认</el-button>
+      </template>
+    </el-dialog>
   </div>
 </template>
 
@@ -215,13 +240,16 @@ import {
   resetUserPassword,
   getUserStatistics
 } from '@/api/admin/user'
+import { getRoleList, setUserRoles } from '@/api/admin/role'
 
 const loading = ref(false)
 const users = ref([])
 const statistics = ref({})
 const detailVisible = ref(false)
 const resetPasswordVisible = ref(false)
+const roleVisible = ref(false)
 const currentUser = ref(null)
+const allRoles = ref([])
 
 const filterForm = reactive({
   username: '',
@@ -234,6 +262,12 @@ const resetForm = reactive({
   username: '',
   newPassword: '',
   confirmPassword: ''
+})
+
+const roleForm = reactive({
+  userId: null,
+  username: '',
+  selectedRoleIds: []
 })
 
 const pagination = reactive({
@@ -378,9 +412,54 @@ const confirmResetPassword = async () => {
   }
 }
 
+// 获取所有角色
+const fetchAllRoles = async () => {
+  try {
+    const response = await getRoleList()
+    allRoles.value = response.data || []
+  } catch (error) {
+    console.error('获取角色列表失败:', error)
+  }
+}
+
+// 分配角色
+const handleAssignRole = async (row) => {
+  roleForm.userId = row.id
+  roleForm.username = row.username
+
+  // 获取用户当前角色
+  try {
+    const response = await getAdminUserDetail(row.id)
+    const user = response.data
+    // 根据角色名称匹配角色ID
+    const roleIds = allRoles.value
+      .filter(role => user.roles?.includes(role.roleCode.replace('ROLE_', '').toLowerCase()))
+      .map(role => role.id)
+    roleForm.selectedRoleIds = roleIds
+  } catch (error) {
+    roleForm.selectedRoleIds = []
+  }
+
+  roleVisible.value = true
+}
+
+// 确认分配角色
+const confirmAssignRole = async () => {
+  try {
+    await setUserRoles(roleForm.userId, roleForm.selectedRoleIds)
+    ElMessage.success('角色分配成功')
+    roleVisible.value = false
+    fetchUsers()
+  } catch (error) {
+    console.error('角色分配失败:', error)
+    ElMessage.error('角色分配失败')
+  }
+}
+
 onMounted(() => {
   fetchStatistics()
   fetchUsers()
+  fetchAllRoles()
 })
 </script>
 
@@ -453,6 +532,36 @@ onMounted(() => {
       h3 {
         margin: 12px 0 8px;
         font-size: 18px;
+      }
+    }
+  }
+
+  .role-dialog-content {
+    .user-info {
+      margin-bottom: 16px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid #ebeef5;
+      font-weight: 500;
+    }
+
+    .role-checkbox-group {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+
+      .role-checkbox {
+        margin-right: 0;
+        height: auto;
+
+        .role-name {
+          font-weight: 500;
+        }
+
+        .role-code {
+          margin-left: 8px;
+          color: #909399;
+          font-size: 12px;
+        }
       }
     }
   }

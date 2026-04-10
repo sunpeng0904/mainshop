@@ -77,11 +77,17 @@
           <template #default="{ row }">
             <el-image
               v-if="row.images && row.images.length > 0"
-              :src="row.images[0]"
-              :preview-src-list="row.images"
+              :src="getProductImage(row.images[0])"
+              :preview-src-list="getProductImages(row.images)"
               fit="cover"
               style="width: 60px; height: 60px; border-radius: 4px;"
-            />
+            >
+              <template #error>
+                <div class="no-image">
+                  <el-icon><Picture /></el-icon>
+                </div>
+              </template>
+            </el-image>
             <div v-else class="no-image">
               <el-icon><Picture /></el-icon>
             </div>
@@ -143,6 +149,7 @@ import { ref, reactive, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { useStore } from 'vuex'
+import { getImageUrl } from '@/utils/image'
 import {
   getAdminProductList,
   deleteProduct,
@@ -174,6 +181,17 @@ const pagination = reactive({
 
 // 分类树
 const categoryTree = computed(() => store.state.product.categories || [])
+
+// 获取商品图片
+const getProductImage = (image) => {
+  return getImageUrl(image)
+}
+
+// 获取商品图片列表
+const getProductImages = (images) => {
+  if (!images || !Array.isArray(images)) return []
+  return images.map(img => getImageUrl(img))
+}
 
 // 获取商品列表
 const fetchProducts = async () => {

@@ -1,5 +1,6 @@
 package com.online.mall.security;
 
+import com.online.mall.entity.Role;
 import com.online.mall.entity.User;
 import lombok.Data;
 import org.springframework.security.core.GrantedAuthority;
@@ -17,25 +18,27 @@ import java.util.List;
 public class CustomUserDetails implements UserDetails {
 
     private final User user;
+    private final List<Role> roles;
 
-    public CustomUserDetails(User user) {
+    public CustomUserDetails(User user, List<Role> roles) {
         this.user = user;
+        this.roles = roles;
     }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         if (user.getStatus() != null && user.getStatus() == 0) {
-            // 禁用用户
+            // 禁用用户无权限
             return new ArrayList<>();
         }
 
         List<SimpleGrantedAuthority> authorities = new ArrayList<>();
-        // 所有正常用户都有 USER 角色
-        authorities.add(new SimpleGrantedAuthority("ROLE_USER"));
 
-        // admin 用户额外拥有 ADMIN 角色
-        if ("admin".equals(user.getUsername())) {
-            authorities.add(new SimpleGrantedAuthority("ROLE_ADMIN"));
+        // 从数据库加载的角色
+        if (roles != null && !roles.isEmpty()) {
+            for (Role role : roles) {
+                authorities.add(new SimpleGrantedAuthority(role.getRoleCode()));
+            }
         }
 
         return authorities;
@@ -74,5 +77,32 @@ public class CustomUserDetails implements UserDetails {
 
     public Long getId() {
         return user.getId();
+    }
+
+    /**
+     * 获取角色编码列表
+     */
+    public List<String> getRoleCodes() {
+        List<String> roleCodes = new ArrayList<>();
+        if (roles != null) {
+            for (Role role : roles) {
+                roleCodes.add(role.getRoleCode());
+            }
+        }
+        return roleCodes;
+    }
+
+    /**
+     * 判断是否为管理员
+     */
+    public boolean isAdmin() {
+        if (roles != null) {
+            for (Role role : roles) {
+                if ("ROLE_ADMIN".equals(role.getRoleCode())) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 }

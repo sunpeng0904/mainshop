@@ -159,6 +159,16 @@ const routes = [
           icon: 'User',
           requiresAdmin: true
         }
+      },
+      {
+        path: 'roles',
+        name: 'AdminRoles',
+        component: () => import('@/views/admin/roles/index.vue'),
+        meta: {
+          title: '角色管理',
+          icon: 'Key',
+          requiresAdmin: true
+        }
       }
     ]
   },

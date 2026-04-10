@@ -36,6 +36,7 @@
           <span>用户管理</span>
         </template>
         <el-menu-item index="/admin/users">用户列表</el-menu-item>
+        <el-menu-item index="/admin/roles">角色管理</el-menu-item>
       </el-sub-menu>
     </el-menu>
   </div>

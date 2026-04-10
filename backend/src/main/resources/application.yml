@@ -24,6 +24,14 @@ spring:
       maximum-pool-size: 20
       minimum-idle: 5
 
+  # SQL初始化配置
+  sql:
+    init:
+      mode: always
+      schema-locations: classpath:schema.sql
+      data-locations: classpath:data.sql
+      continue-on-error: true
+
   # H2控制台（已禁用）
   h2:
     console:
@@ -73,6 +81,10 @@ app:
   file:
     upload-path: ./uploads/
     access-path: /uploads/**
+
+  # 图片缓存配置
+  image:
+    cache-path: ./uploads/cache/
   
 # 跨域配置（在代码中通过@CrossOrigin或WebMvcConfigurer配置）
 # cors配置已移除，将在代码中配置

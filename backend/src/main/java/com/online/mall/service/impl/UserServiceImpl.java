@@ -7,15 +7,16 @@ import com.online.mall.common.BusinessException;
 import com.online.mall.dto.UserLoginDTO;
 import com.online.mall.dto.UserRegisterDTO;
 import com.online.mall.dto.UserUpdateDTO;
+import com.online.mall.entity.Role;
 import com.online.mall.entity.User;
 import com.online.mall.mapper.UserMapper;
+import com.online.mall.service.RoleService;
 import com.online.mall.service.UserService;
 import com.online.mall.utils.JwtTokenUtil;
 import com.online.mall.vo.UserVO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.core.Authentication;
@@ -25,9 +26,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.Arrays;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * 用户服务实现
@@ -44,6 +45,9 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 
     @Autowired
     private AuthenticationConfiguration authenticationConfiguration;
+
+    @Autowired
+    private RoleService roleService;
     
     @Override
     @Transactional
@@ -245,12 +249,19 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     private UserVO convertToVO(User user) {
         UserVO userVO = new UserVO();
         BeanUtils.copyProperties(user, userVO);
-        // 设置角色：admin用户为管理员角色
-        if ("admin".equals(user.getUsername())) {
-            userVO.setRoles(Arrays.asList("admin", "user"));
+
+        // 从数据库加载用户角色
+        List<Role> roles = roleService.getRolesByUserId(user.getId());
+        if (roles != null && !roles.isEmpty()) {
+            // 提取角色编码（去掉ROLE_前缀）
+            List<String> roleCodes = roles.stream()
+                    .map(role -> role.getRoleCode().replace("ROLE_", "").toLowerCase())
+                    .collect(Collectors.toList());
+            userVO.setRoles(roleCodes);
         } else {
-            userVO.setRoles(Arrays.asList("user"));
+            userVO.setRoles(new ArrayList<>());
         }
+
         return userVO;
     }
 
@@ -309,8 +320,12 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
             throw new BusinessException("user.not.found");
         }
 
-        // 不能禁用admin用户
-        if ("admin".equals(user.getUsername())) {
+        // 检查用户是否拥有管理员角色
+        List<Role> roles = roleService.getRolesByUserId(userId);
+        boolean isAdmin = roles != null && roles.stream()
+                .anyMatch(role -> "ROLE_ADMIN".equals(role.getRoleCode()));
+
+        if (isAdmin) {
             throw new BusinessException("不能禁用管理员账户");
         }
 

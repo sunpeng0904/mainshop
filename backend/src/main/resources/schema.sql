@@ -19,6 +19,45 @@ CREATE TABLE IF NOT EXISTS t_user (
     INDEX idx_phone (phone)
 );
 
+-- 角色表
+CREATE TABLE IF NOT EXISTS t_role (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    role_code VARCHAR(50) NOT NULL UNIQUE,
+    role_name VARCHAR(50) NOT NULL,
+    description VARCHAR(200),
+    sort INT DEFAULT 0,
+    status INT DEFAULT 1,
+    create_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    update_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    deleted INT DEFAULT 0,
+    INDEX idx_role_code (role_code)
+);
+
+-- 用户角色关联表
+CREATE TABLE IF NOT EXISTS t_user_role (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    user_id BIGINT NOT NULL,
+    role_id BIGINT NOT NULL,
+    create_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE KEY uk_user_role (user_id, role_id),
+    INDEX idx_user_id (user_id),
+    INDEX idx_role_id (role_id)
+);
+
+-- 分类表
+CREATE TABLE IF NOT EXISTS category (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(50) NOT NULL,
+    parent_id BIGINT DEFAULT 0,
+    level INT DEFAULT 1,
+    sort INT DEFAULT 0,
+    status INT DEFAULT 1,
+    icon VARCHAR(50),
+    description VARCHAR(200),
+    create_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    update_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
+
 -- 商品表
 CREATE TABLE IF NOT EXISTS product (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,

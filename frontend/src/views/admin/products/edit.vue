@@ -63,7 +63,13 @@
               :key="index"
               class="image-item"
             >
-              <el-image :src="url" fit="cover" />
+              <el-image :src="getImageUrl(url)" fit="cover">
+                <template #error>
+                  <div class="image-error">
+                    <el-icon><Picture /></el-icon>
+                  </div>
+                </template>
+              </el-image>
               <div class="image-actions">
                 <el-icon @click="removeImage(index)"><Delete /></el-icon>
               </div>
@@ -125,6 +131,7 @@ import { ref, reactive, computed, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
 import { useStore } from 'vuex'
+import { getImageUrl } from '@/utils/image'
 import { getAdminProductDetail, createProduct, updateProduct } from '@/api/admin/product'
 
 const route = useRoute()
@@ -280,6 +287,16 @@ onMounted(() => {
       .el-image {
         width: 100%;
         height: 100%;
+      }
+
+      .image-error {
+        width: 100%;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #f5f7fa;
+        color: #c0c4cc;
       }
 
       .image-actions {
