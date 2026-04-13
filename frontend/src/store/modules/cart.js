@@ -2,15 +2,15 @@
  * 购物车状态管理
  */
 import {
-  getCartList,
-  addToCart,
-  updateCartQuantity,
-  removeCartItem,
-  batchRemoveCartItems,
-  selectCartItem,
-  selectAllCart,
-  clearCart,
-  getCartCount
+  getCartList as fetchCartList,
+  addToCart as addCartItem,
+  updateCartQuantity as updateCartItemQuantity,
+  removeCartItem as deleteCartItem,
+  batchRemoveCartItems as deleteCartItems,
+  selectCartItem as toggleCartItem,
+  selectAllCart as toggleAllCart,
+  clearCart as emptyCart,
+  getCartCount as fetchCartCount
 } from '@/api/cart'
 
 const state = {
@@ -61,7 +61,7 @@ const actions = {
   // 获取购物车列表
   async getCartList({ commit }) {
     try {
-      const response = await getCartList()
+      const response = await fetchCartList()
       commit('SET_CART_LIST', response.data)
       return response
     } catch (error) {
@@ -72,7 +72,7 @@ const actions = {
   // 获取购物车数量
   async getCartCount({ commit }) {
     try {
-      const response = await getCartCount()
+      const response = await fetchCartCount()
       commit('SET_CART_COUNT', response.data)
       return response
     } catch (error) {
@@ -83,7 +83,7 @@ const actions = {
   // 添加商品到购物车
   async addToCart({ dispatch }, data) {
     try {
-      const response = await addToCart(data)
+      const response = await addCartItem(data)
       await dispatch('getCartList')
       return response
     } catch (error) {
@@ -94,7 +94,7 @@ const actions = {
   // 更新商品数量
   async updateQuantity({ dispatch }, data) {
     try {
-      const response = await updateCartQuantity(data)
+      const response = await updateCartItemQuantity(data)
       await dispatch('getCartList')
       return response
     } catch (error) {
@@ -105,7 +105,7 @@ const actions = {
   // 删除商品
   async removeItem({ dispatch }, cartId) {
     try {
-      const response = await removeCartItem(cartId)
+      const response = await deleteCartItem(cartId)
       await dispatch('getCartList')
       return response
     } catch (error) {
@@ -116,7 +116,7 @@ const actions = {
   // 批量删除
   async batchRemove({ dispatch }, cartIds) {
     try {
-      const response = await batchRemoveCartItems(cartIds)
+      const response = await deleteCartItems(cartIds)
       await dispatch('getCartList')
       return response
     } catch (error) {
@@ -127,7 +127,7 @@ const actions = {
   // 选中/取消选中
   async selectItem({ dispatch }, data) {
     try {
-      const response = await selectCartItem(data)
+      const response = await toggleCartItem(data)
       await dispatch('getCartList')
       return response
     } catch (error) {
@@ -138,7 +138,7 @@ const actions = {
   // 全选/取消全选
   async selectAll({ dispatch }, selected) {
     try {
-      const response = await selectAllCart(selected)
+      const response = await toggleAllCart(selected)
       await dispatch('getCartList')
       return response
     } catch (error) {
@@ -149,7 +149,7 @@ const actions = {
   // 清空购物车
   async clearCart({ commit }) {
     try {
-      await clearCart()
+      await emptyCart()
       commit('CLEAR_CART')
     } catch (error) {
       return Promise.reject(error)

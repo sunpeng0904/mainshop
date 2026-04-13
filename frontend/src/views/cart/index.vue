@@ -26,7 +26,7 @@
       </div>
 
       <div
-        v-for="item in cartList"
+        v-for="item in (cartList || [])"
         :key="item.id"
         class="cart-item card"
       >
@@ -36,31 +36,31 @@
         />
         <div class="col-product">
           <el-image
-            :src="item.productImage"
+            :src="getImageUrl(item.productImage)"
             fit="cover"
             class="product-image"
             @click="$router.push(`/product/${item.productId}`)"
           />
           <div class="product-info">
             <h4 class="product-name" @click="$router.push(`/product/${item.productId}`)">
-              {{ item.productName }}
+              {{ item.productName || '-' }}
             </h4>
             <span v-if="item.productStatus === 0" class="product-status text-danger">
               已下架
             </span>
           </div>
         </div>
-        <span class="col-price">¥{{ item.productPrice }}</span>
+        <span class="col-price">¥{{ item.productPrice || 0 }}</span>
         <div class="col-quantity">
           <el-input-number
             v-model="item.quantity"
             :min="1"
-            :max="item.productStock"
+            :max="item.productStock || 999"
             size="small"
             @change="(val) => handleQuantityChange(item.id, val)"
           />
         </div>
-        <span class="col-total">¥{{ item.subtotal }}</span>
+        <span class="col-total">¥{{ item.subtotal || 0 }}</span>
         <div class="col-action">
           <el-button text type="danger" @click="handleRemove(item.id)">
             删除
@@ -112,13 +112,13 @@
         <!-- 商品清单 -->
         <div class="goods-section">
           <h4>商品清单</h4>
-          <div v-for="item in selectedItems" :key="item.id" class="checkout-item">
-            <el-image :src="item.productImage" fit="cover" class="item-image" />
+          <div v-for="item in (selectedItems || [])" :key="item.id" class="checkout-item">
+            <el-image :src="getImageUrl(item.productImage)" fit="cover" class="item-image" />
             <div class="item-info">
-              <span class="item-name">{{ item.productName }}</span>
-              <span class="item-price">¥{{ item.productPrice }} × {{ item.quantity }}</span>
+              <span class="item-name">{{ item.productName || '-' }}</span>
+              <span class="item-price">¥{{ item.productPrice || 0 }} × {{ item.quantity || 0 }}</span>
             </div>
-            <span class="item-total">¥{{ item.subtotal }}</span>
+            <span class="item-total">¥{{ item.subtotal || 0 }}</span>
           </div>
         </div>
 
@@ -172,6 +172,7 @@ import { ElMessage, ElMessageBox } from 'element-plus'
 import { getAddressList, getDefaultAddress } from '@/api/address'
 import { createOrder } from '@/api/order'
 import { createPayment, mockPaymentSuccess } from '@/api/payment'
+import { getImageUrl } from '@/utils/image'
 
 const store = useStore()
 const router = useRouter()
@@ -242,18 +243,36 @@ const selectAddress = (addr) => {
 }
 
 // 选中/取消选中
-const handleSelect = (cartId, selected) => {
-  store.dispatch('cart/selectItem', { cartId, selected })
+const handleSelect = async (cartId, selected) => {
+  try {
+    await store.dispatch('cart/selectItem', { cartId, selected })
+  } catch (error) {
+    // 失败时刷新列表恢复正确状态
+    await store.dispatch('cart/getCartList')
+    ElMessage.error(error.message || '操作失败')
+  }
 }
 
 // 全选/取消全选
-const handleSelectAll = (selected) => {
-  store.dispatch('cart/selectAll', selected)
+const handleSelectAll = async (selected) => {
+  try {
+    await store.dispatch('cart/selectAll', selected)
+  } catch (error) {
+    // 失败时刷新列表恢复正确状态
+    await store.dispatch('cart/getCartList')
+    ElMessage.error(error.message || '操作失败')
+  }
 }
 
 // 修改数量
-const handleQuantityChange = (cartId, quantity) => {
-  store.dispatch('cart/updateQuantity', { cartId, quantity })
+const handleQuantityChange = async (cartId, quantity) => {
+  try {
+    await store.dispatch('cart/updateQuantity', { cartId, quantity })
+  } catch (error) {
+    // 失败时刷新列表恢复正确数量
+    await store.dispatch('cart/getCartList')
+    ElMessage.error(error.message || '更新失败')
+  }
 }
 
 // 删除商品

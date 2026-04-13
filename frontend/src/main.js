@@ -8,6 +8,23 @@ import * as ElementPlusIconsVue from '@element-plus/icons-vue'
 import '@/styles/index.scss'
 import i18n from './locales'
 
+// 抑制 ResizeObserver 循环错误（Element Plus 常见问题，无害）
+const debounce = (fn, delay) => {
+  let timer = null
+  return function (...args) {
+    if (timer) clearTimeout(timer)
+    timer = setTimeout(() => fn.apply(this, args), delay)
+  }
+}
+
+const _ResizeObserver = window.ResizeObserver
+window.ResizeObserver = class ResizeObserver extends _ResizeObserver {
+  constructor(callback) {
+    callback = debounce(callback, 16)
+    super(callback)
+  }
+}
+
 // 创建Vue实例
 const app = createApp(App)
 

@@ -9,6 +9,8 @@ import com.online.mall.mapper.CartMapper;
 import com.online.mall.service.CartService;
 import com.online.mall.service.ProductService;
 import com.online.mall.vo.CartVO;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -27,6 +29,8 @@ public class CartServiceImpl extends ServiceImpl<CartMapper, Cart> implements Ca
 
     @Autowired
     private ProductService productService;
+
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
     @Override
     @Transactional
@@ -237,18 +241,24 @@ public class CartServiceImpl extends ServiceImpl<CartMapper, Cart> implements Ca
         vo.setProductStock(product.getStock());
         vo.setProductStatus(product.getStatus());
 
-        // 处理图片
+        // 处理图片 - 从商品图片JSON数组中取第一张
         if (product.getImages() != null && !product.getImages().isEmpty()) {
-            String images = product.getImages();
-            if (images.startsWith("[")) {
-                // JSON数组，取第一张
-                images = images.replace("[", "").replace("]", "").replace("\"", "");
-                String[] imageArray = images.split(",");
-                if (imageArray.length > 0) {
-                    vo.setProductImage(imageArray[0].trim());
+            String images = product.getImages().trim();
+            try {
+                if (images.startsWith("[")) {
+                    // JSON数组格式，解析并取第一张
+                    List<String> imageList = objectMapper.readValue(images, new TypeReference<List<String>>() {});
+                    if (imageList != null && !imageList.isEmpty()) {
+                        vo.setProductImage(imageList.get(0));
+                    }
+                } else {
+                    // 单个图片路径
+                    vo.setProductImage(images);
                 }
-            } else {
-                vo.setProductImage(images);
+            } catch (Exception e) {
+                log.warn("解析商品图片失败: productId={}, images={}", product.getId(), images);
+                // 尝试简单处理
+                vo.setProductImage(images.replace("[", "").replace("]", "").replace("\"", "").split(",")[0].trim());
             }
         }
 

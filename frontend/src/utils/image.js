@@ -30,8 +30,7 @@ export function getImageUrl(path) {
     path = '/' + path
   }
 
-  // 图片路径统一通过后端API访问（后端context-path为/api）
-  // 开发环境通过vue.config.js代理，生产环境直接访问
+  // 所有路径统一添加 /api 前缀
   return '/api' + path
 }
 

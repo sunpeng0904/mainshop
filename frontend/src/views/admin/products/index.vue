@@ -76,8 +76,8 @@
         <el-table-column label="商品图片" width="100">
           <template #default="{ row }">
             <el-image
-              v-if="row.images && row.images.length > 0"
-              :src="getProductImage(row.images[0])"
+              v-if="row.images && parseImages(row.images).length > 0"
+              :src="getProductImage(row.images)"
               :preview-src-list="getProductImages(row.images)"
               fit="cover"
               style="width: 60px; height: 60px; border-radius: 4px;"
@@ -182,15 +182,30 @@ const pagination = reactive({
 // 分类树
 const categoryTree = computed(() => store.state.product.categories || [])
 
+// 解析图片列表（兼容数组和字符串格式）
+const parseImages = (images) => {
+  if (!images) return []
+  if (Array.isArray(images)) return images
+  if (typeof images === 'string') {
+    try {
+      const parsed = JSON.parse(images)
+      return Array.isArray(parsed) ? parsed : [parsed]
+    } catch (e) {
+      return [images]
+    }
+  }
+  return []
+}
+
 // 获取商品图片
-const getProductImage = (image) => {
-  return getImageUrl(image)
+const getProductImage = (images) => {
+  const imageList = parseImages(images)
+  return imageList.length > 0 ? getImageUrl(imageList[0]) : ''
 }
 
 // 获取商品图片列表
 const getProductImages = (images) => {
-  if (!images || !Array.isArray(images)) return []
-  return images.map(img => getImageUrl(img))
+  return parseImages(images).map(img => getImageUrl(img))
 }
 
 // 获取商品列表

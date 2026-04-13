@@ -192,19 +192,35 @@ const router = createRouter({
 })
 
 // 路由守卫
-router.beforeEach((to, from, next) => {
+router.beforeEach(async (to, from, next) => {
   // 设置页面标题
   if (to.meta.title) {
     document.title = `${to.meta.title} - 在线商城`
   }
 
+  const token = store.state.user.token
+
   // 检查是否需要认证
   if (to.meta.requiresAuth) {
-    const token = store.state.user.token
     if (!token) {
       ElMessage.warning('请先登录')
       next('/login')
       return
+    }
+
+    // 如果没有用户信息，先获取
+    if (!store.state.user.userInfo) {
+      try {
+        await store.dispatch('user/getUserInfo')
+        // 获取购物车数据
+        await store.dispatch('cart/getCartList')
+      } catch (error) {
+        // token过期，清除登录状态
+        store.commit('user/CLEAR_USER')
+        ElMessage.warning('登录已过期，请重新登录')
+        next('/login')
+        return
+      }
     }
 
     // 检查是否需要管理员权限
@@ -220,7 +236,6 @@ router.beforeEach((to, from, next) => {
 
   // 如果已登录且访问登录页，跳转到首页
   if (to.path === '/login') {
-    const token = store.state.user.token
     if (token) {
       next('/home')
       return

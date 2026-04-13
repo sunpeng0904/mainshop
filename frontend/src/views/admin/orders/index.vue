@@ -64,20 +64,21 @@
             <div class="goods-info">
               <template v-if="row.items && row.items.length > 0">
                 <div v-for="item in row.items.slice(0, 2)" :key="item.id" class="goods-item">
-                  <el-image :src="item.productImage" fit="cover" class="goods-image" />
-                  <span class="goods-name">{{ item.productName }}</span>
-                  <span class="goods-qty">x{{ item.quantity }}</span>
+                  <el-image :src="getImageUrl(item.productImage)" fit="cover" class="goods-image" />
+                  <span class="goods-name">{{ item.productName || '-' }}</span>
+                  <span class="goods-qty">x{{ item.quantity || 0 }}</span>
                 </div>
                 <div v-if="row.items.length > 2" class="more-items">
                   共{{ row.items.length }}件商品
                 </div>
               </template>
+              <span v-else class="text-muted">无商品信息</span>
             </div>
           </template>
         </el-table-column>
         <el-table-column label="订单金额" width="120">
           <template #default="{ row }">
-            <span class="price">¥{{ row.payAmount }}</span>
+            <span class="price">¥{{ row.payAmount || 0 }}</span>
           </template>
         </el-table-column>
         <el-table-column prop="receiverName" label="收货人" width="100" />
@@ -85,7 +86,7 @@
         <el-table-column label="状态" width="100">
           <template #default="{ row }">
             <el-tag :type="getStatusType(row.status)">
-              {{ row.statusName }}
+              {{ row.statusName || '未知' }}
             </el-tag>
           </template>
         </el-table-column>
@@ -143,40 +144,40 @@
     <el-dialog v-model="detailVisible" title="订单详情" width="700px">
       <template v-if="currentOrder">
         <el-descriptions :column="2" border>
-          <el-descriptions-item label="订单编号">{{ currentOrder.orderNo }}</el-descriptions-item>
+          <el-descriptions-item label="订单编号">{{ currentOrder.orderNo || '-' }}</el-descriptions-item>
           <el-descriptions-item label="订单状态">
-            <el-tag :type="getStatusType(currentOrder.status)">{{ currentOrder.statusName }}</el-tag>
+            <el-tag :type="getStatusType(currentOrder.status)">{{ currentOrder.statusName || '未知' }}</el-tag>
           </el-descriptions-item>
-          <el-descriptions-item label="用户">{{ currentOrder.username }}</el-descriptions-item>
+          <el-descriptions-item label="用户">{{ currentOrder.username || '-' }}</el-descriptions-item>
           <el-descriptions-item label="支付方式">{{ currentOrder.payTypeName || '-' }}</el-descriptions-item>
-          <el-descriptions-item label="订单金额">¥{{ currentOrder.totalAmount }}</el-descriptions-item>
+          <el-descriptions-item label="订单金额">¥{{ currentOrder.totalAmount || 0 }}</el-descriptions-item>
           <el-descriptions-item label="实付金额">
-            <span class="price">¥{{ currentOrder.payAmount }}</span>
+            <span class="price">¥{{ currentOrder.payAmount || 0 }}</span>
           </el-descriptions-item>
-          <el-descriptions-item label="收货人">{{ currentOrder.receiverName }}</el-descriptions-item>
-          <el-descriptions-item label="联系电话">{{ currentOrder.receiverPhone }}</el-descriptions-item>
-          <el-descriptions-item label="收货地址" :span="2">{{ currentOrder.receiverAddress }}</el-descriptions-item>
+          <el-descriptions-item label="收货人">{{ currentOrder.receiverName || '-' }}</el-descriptions-item>
+          <el-descriptions-item label="联系电话">{{ currentOrder.receiverPhone || '-' }}</el-descriptions-item>
+          <el-descriptions-item label="收货地址" :span="2">{{ currentOrder.receiverAddress || '-' }}</el-descriptions-item>
           <el-descriptions-item label="订单备注" :span="2">{{ currentOrder.remark || '-' }}</el-descriptions-item>
-          <el-descriptions-item label="创建时间">{{ formatTime(currentOrder.createTime) }}</el-descriptions-item>
+          <el-descriptions-item label="创建时间">{{ formatTime(currentOrder.createTime) || '-' }}</el-descriptions-item>
           <el-descriptions-item label="支付时间">{{ formatTime(currentOrder.payTime) || '-' }}</el-descriptions-item>
           <el-descriptions-item label="发货时间">{{ formatTime(currentOrder.deliveryTime) || '-' }}</el-descriptions-item>
           <el-descriptions-item label="收货时间">{{ formatTime(currentOrder.receiveTime) || '-' }}</el-descriptions-item>
         </el-descriptions>
 
         <h4 style="margin: 20px 0 10px">商品信息</h4>
-        <el-table :data="currentOrder.items" border size="small">
+        <el-table :data="currentOrder.items || []" border size="small">
           <el-table-column label="商品图片" width="80">
             <template #default="{ row }">
-              <el-image :src="row.productImage" fit="cover" style="width: 50px; height: 50px;" />
+              <el-image :src="getImageUrl(row.productImage)" fit="cover" style="width: 50px; height: 50px;" />
             </template>
           </el-table-column>
           <el-table-column prop="productName" label="商品名称" />
           <el-table-column label="单价" width="100">
-            <template #default="{ row }">¥{{ row.productPrice }}</template>
+            <template #default="{ row }">¥{{ row.productPrice || 0 }}</template>
           </el-table-column>
           <el-table-column prop="quantity" label="数量" width="80" />
           <el-table-column label="小计" width="100">
-            <template #default="{ row }">¥{{ row.subtotal }}</template>
+            <template #default="{ row }">¥{{ row.subtotal || 0 }}</template>
           </el-table-column>
         </el-table>
       </template>
@@ -211,6 +212,7 @@ import {
   deleteOrder,
   getOrderStatistics
 } from '@/api/admin/order'
+import { getImageUrl } from '@/utils/image'
 
 const loading = ref(false)
 const orders = ref([])

@@ -266,6 +266,18 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product> impl
             vo.setImages(new ArrayList<>());
         }
 
+        // 处理规格参数
+        if (product.getSpecifications() != null && !product.getSpecifications().isEmpty()) {
+            try {
+                ObjectMapper mapper = new ObjectMapper();
+                Object specObj = mapper.readValue(product.getSpecifications(), Object.class);
+                vo.setSpecifications(specObj);
+            } catch (Exception e) {
+                // 如果解析失败，保持原样
+                vo.setSpecifications(product.getSpecifications());
+            }
+        }
+
         return vo;
     }
 

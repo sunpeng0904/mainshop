@@ -231,6 +231,7 @@ const handleAddToCart = async () => {
     ElMessage.success(t('cart.addSuccess') || '已加入购物车')
   } catch (error) {
     console.error('加入购物车失败:', error)
+    ElMessage.error(error.message || '加入购物车失败')
   }
 }
 
@@ -250,6 +251,7 @@ const handleBuyNow = async () => {
     router.push('/cart')
   } catch (error) {
     console.error('操作失败:', error)
+    ElMessage.error(error.message || '操作失败')
   }
 }
 

@@ -5,8 +5,28 @@
 </template>
 
 <script>
+import { useStore } from 'vuex'
+import { getToken } from '@/utils/auth'
+
 export default {
-  name: 'App'
+  name: 'App',
+  setup() {
+    const store = useStore()
+
+    // 初始化购物车数据
+    const initCart = () => {
+      const token = getToken()
+      if (token) {
+        // 已登录时获取购物车数据
+        store.dispatch('cart/getCartList').catch(() => {
+          // 忽略错误，可能是token过期
+        })
+      }
+    }
+
+    // 页面加载时初始化购物车
+    initCart()
+  }
 }
 </script>
 

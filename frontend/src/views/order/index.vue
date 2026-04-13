@@ -28,20 +28,20 @@
         <!-- 订单商品 -->
         <div class="order-goods">
           <div
-            v-for="item in order.items"
+            v-for="item in (order.items || [])"
             :key="item.id"
             class="goods-item"
           >
             <el-image
-              :src="item.productImage"
+              :src="getImageUrl(item.productImage)"
               fit="cover"
               class="goods-image"
             />
             <div class="goods-info">
               <h4>{{ item.productName }}</h4>
-              <p class="goods-price">¥{{ item.price }} × {{ item.quantity }}</p>
+              <p class="goods-price">¥{{ item.productPrice || 0 }} × {{ item.quantity || 0 }}</p>
             </div>
-            <span class="goods-total">¥{{ item.subtotal }}</span>
+            <span class="goods-total">¥{{ item.subtotal || 0 }}</span>
           </div>
         </div>
 
@@ -49,7 +49,7 @@
         <div class="order-footer">
           <div class="order-total">
             共 {{ getOrderItemCount(order) }} 件商品，实付
-            <span class="price">¥{{ order.payAmount }}</span>
+            <span class="price">¥{{ order.payAmount || 0 }}</span>
           </div>
           <div class="order-actions">
             <el-button
@@ -106,6 +106,7 @@ import { useRouter } from 'vue-router'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { getOrderList, cancelOrder, confirmOrder, deleteOrder, getOrderStatusMap } from '@/api/order'
 import { createPayment, mockPaymentSuccess, getPaymentByOrderId } from '@/api/payment'
+import { getImageUrl } from '@/utils/image'
 
 const router = useRouter()
 

@@ -74,12 +74,21 @@
                 <el-icon @click="removeImage(index)"><Delete /></el-icon>
               </div>
             </div>
-            <div v-if="formData.imageList.length < 5" class="image-upload-btn" @click="showImageDialog = true">
+            <el-upload
+              v-if="formData.imageList.length < 5"
+              ref="uploadRef"
+              class="image-upload-btn"
+              action="#"
+              :auto-upload="false"
+              :show-file-list="false"
+              :accept="'.jpg,.jpeg,.png,.gif,.webp'"
+              :on-change="handleFileChange"
+            >
               <el-icon><Plus /></el-icon>
               <span>添加图片</span>
-            </div>
+            </el-upload>
           </div>
-          <div class="upload-tip">最多上传5张图片，第一张为主图</div>
+          <div class="upload-tip">支持上传jpg、jpeg、png、gif、webp格式图片，单张不超过10MB，最多5张</div>
         </el-form-item>
 
         <el-form-item label="商品描述">
@@ -91,6 +100,42 @@
             maxlength="500"
             show-word-limit
           />
+        </el-form-item>
+
+        <el-form-item label="规格参数">
+          <div class="spec-list">
+            <div
+              v-for="(spec, index) in formData.specifications"
+              :key="index"
+              class="spec-item"
+            >
+              <el-input
+                v-model="spec.label"
+                placeholder="参数名称"
+                style="width: 150px"
+              />
+              <el-input
+                v-model="spec.value"
+                placeholder="参数值"
+                style="flex: 1"
+              />
+              <el-button
+                type="danger"
+                :icon="Delete"
+                circle
+                @click="removeSpec(index)"
+              />
+            </div>
+            <el-button
+              type="primary"
+              :icon="Plus"
+              plain
+              @click="addSpec"
+            >
+              添加规格参数
+            </el-button>
+          </div>
+          <div class="upload-tip">如：品牌、型号、颜色、尺寸等商品规格信息</div>
         </el-form-item>
 
         <el-form-item label="商品详情">
@@ -110,19 +155,6 @@
         </el-form-item>
       </el-form>
     </div>
-
-    <!-- 图片URL输入对话框 -->
-    <el-dialog v-model="showImageDialog" title="添加图片" width="500px">
-      <el-input
-        v-model="imageUrl"
-        placeholder="请输入图片URL地址"
-        @keyup.enter="addImage"
-      />
-      <template #footer>
-        <el-button @click="showImageDialog = false">取消</el-button>
-        <el-button type="primary" @click="addImage">确定</el-button>
-      </template>
-    </el-dialog>
   </div>
 </template>
 
@@ -130,19 +162,20 @@
 import { ref, reactive, computed, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
+import { Delete, Plus } from '@element-plus/icons-vue'
 import { useStore } from 'vuex'
 import { getImageUrl } from '@/utils/image'
 import { getAdminProductDetail, createProduct, updateProduct } from '@/api/admin/product'
+import { uploadImage } from '@/api/admin/upload'
 
 const route = useRoute()
 const router = useRouter()
 const store = useStore()
 
 const formRef = ref(null)
+const uploadRef = ref(null)
 const loading = ref(false)
 const submitting = ref(false)
-const showImageDialog = ref(false)
-const imageUrl = ref('')
 
 const isEdit = computed(() => !!route.params.id)
 
@@ -154,6 +187,7 @@ const formData = reactive({
   stock: 0,
   status: 1,
   imageList: [],
+  specifications: [],
   description: '',
   detail: ''
 })
@@ -167,19 +201,51 @@ const rules = {
 
 const categoryTree = computed(() => store.state.product.categories || [])
 
-// 添加图片
-const addImage = () => {
-  if (!imageUrl.value) {
-    ElMessage.warning('请输入图片URL')
+// 允许的图片类型
+const ALLOWED_TYPES = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp']
+const MAX_SIZE = 10 * 1024 * 1024 // 10MB
+
+// 验证文件
+const validateFile = (file) => {
+  // 检查文件类型
+  if (!ALLOWED_TYPES.includes(file.type)) {
+    ElMessage.error('只支持 jpg、jpeg、png、gif、webp 格式的图片')
+    return false
+  }
+
+  // 检查文件大小
+  if (file.size > MAX_SIZE) {
+    ElMessage.error('图片大小不能超过10MB')
+    return false
+  }
+
+  return true
+}
+
+// 处理文件选择
+const handleFileChange = async (uploadFile) => {
+  const file = uploadFile.raw
+
+  if (!validateFile(file)) {
     return
   }
+
   if (formData.imageList.length >= 5) {
     ElMessage.warning('最多上传5张图片')
     return
   }
-  formData.imageList.push(imageUrl.value)
-  imageUrl.value = ''
-  showImageDialog.value = false
+
+  try {
+    ElMessage.info('正在上传图片...')
+    const response = await uploadImage(file)
+    if (response.data && response.data.url) {
+      formData.imageList.push(response.data.url)
+      ElMessage.success('图片上传成功')
+    }
+  } catch (error) {
+    console.error('上传图片失败:', error)
+    ElMessage.error('图片上传失败')
+  }
 }
 
 // 删除图片
@@ -187,11 +253,55 @@ const removeImage = (index) => {
   formData.imageList.splice(index, 1)
 }
 
+// 添加规格参数
+const addSpec = () => {
+  formData.specifications.push({ label: '', value: '' })
+}
+
+// 删除规格参数
+const removeSpec = (index) => {
+  formData.specifications.splice(index, 1)
+}
+
+// 解析规格参数（兼容对象、数组、字符串格式）
+const parseSpecifications = (spec) => {
+  if (!spec) return []
+  if (Array.isArray(spec)) {
+    return spec.map(item => ({
+      label: item.label || item.name || item.key || '',
+      value: item.value || ''
+    }))
+  }
+  if (typeof spec === 'object') {
+    return Object.entries(spec).map(([key, value]) => ({
+      label: key,
+      value: typeof value === 'object' ? JSON.stringify(value) : String(value)
+    }))
+  }
+  if (typeof spec === 'string') {
+    try {
+      const parsed = JSON.parse(spec)
+      return parseSpecifications(parsed)
+    } catch (e) {
+      return []
+    }
+  }
+  return []
+}
+
 // 提交表单
 const handleSubmit = async () => {
   try {
     await formRef.value.validate()
     submitting.value = true
+
+    // 构建规格参数对象（过滤空值）
+    const specObj = {}
+    formData.specifications.forEach(item => {
+      if (item.label && item.value) {
+        specObj[item.label] = item.value
+      }
+    })
 
     const data = {
       name: formData.name,
@@ -201,6 +311,7 @@ const handleSubmit = async () => {
       stock: formData.stock,
       status: formData.status,
       images: formData.imageList.length > 0 ? JSON.stringify(formData.imageList) : null,
+      specifications: Object.keys(specObj).length > 0 ? JSON.stringify(specObj) : null,
       description: formData.description,
       detail: formData.detail
     }
@@ -228,6 +339,22 @@ const goBack = () => {
   router.push('/admin/products')
 }
 
+// 解析图片列表（兼容数组和字符串格式）
+const parseImages = (images) => {
+  if (!images) return []
+  if (Array.isArray(images)) return images
+  if (typeof images === 'string') {
+    try {
+      const parsed = JSON.parse(images)
+      return Array.isArray(parsed) ? parsed : [parsed]
+    } catch (e) {
+      // 不是JSON，可能是单个URL
+      return [images]
+    }
+  }
+  return []
+}
+
 // 加载商品详情
 const loadProduct = async () => {
   if (!route.params.id) return
@@ -243,7 +370,8 @@ const loadProduct = async () => {
     formData.originalPrice = product.originalPrice
     formData.stock = product.stock
     formData.status = product.status ?? 1
-    formData.imageList = product.images || []
+    formData.imageList = parseImages(product.images)
+    formData.specifications = parseSpecifications(product.specifications)
     formData.description = product.description || ''
     formData.detail = product.detail || ''
   } catch (error) {
@@ -356,6 +484,15 @@ onMounted(() => {
     color: #909399;
     font-size: 12px;
     margin-top: 8px;
+  }
+
+  .spec-list {
+    .spec-item {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 12px;
+      align-items: center;
+    }
   }
 }
 </style>
