@@ -68,51 +68,51 @@ INSERT INTO category (id, name, parent_id, level, sort, status, icon)
 VALUES (10, '服饰鞋包', 0, 1, 4, 1, 'ShoppingBag')
 ON DUPLICATE KEY UPDATE name = name;
 
--- 初始化商品数据（图片使用本地缓存路径）
+-- 初始化商品数据（图片使用本地静态资源路径）
 INSERT INTO product (id, name, category_id, price, original_price, stock, sales, images, description, status)
-VALUES (1, 'iPhone 15 Pro Max 256GB 原色钛金属', 2, 9999.00, 10999.00, 100, 128, '["/uploads/cache/iphone0_400x400.jpg", "/uploads/cache/iphone1_400x400.jpg"]', 'Apple iPhone 15 Pro Max，A17 Pro芯片，钛金属设计', 1)
+VALUES (1, 'iPhone 15 Pro Max 256GB 原色钛金属', 2, 9999.00, 10999.00, 100, 128, '["/images/products/product_1_1.jpg", "/images/products/product_1_2.jpg"]', 'Apple iPhone 15 Pro Max，A17 Pro芯片，钛金属设计', 1)
 ON DUPLICATE KEY UPDATE name = name;
 
 INSERT INTO product (id, name, category_id, price, original_price, stock, sales, images, description, status)
-VALUES (2, '华为 Mate 60 Pro 12GB+512GB', 2, 7999.00, 8999.00, 80, 256, '["/uploads/cache/huawei0_400x400.jpg", "/uploads/cache/huawei1_400x400.jpg"]', '华为 Mate 60 Pro，麒麟9000S处理器，卫星通信', 1)
+VALUES (2, '华为 Mate 60 Pro 12GB+512GB', 2, 7999.00, 8999.00, 80, 256, '["/images/products/product_2_1.jpg", "/images/products/product_2_2.jpg"]', '华为 Mate 60 Pro，麒麟9000S处理器，卫星通信', 1)
 ON DUPLICATE KEY UPDATE name = name;
 
 INSERT INTO product (id, name, category_id, price, original_price, stock, sales, images, description, status)
-VALUES (3, '小米14 Ultra 16GB+512GB', 2, 6499.00, 6999.00, 120, 89, '["/uploads/cache/xiaomi0_400x400.jpg", "/uploads/cache/xiaomi1_400x400.jpg"]', '小米14 Ultra，徕卡光学镜头，骁龙8 Gen3', 1)
+VALUES (3, '小米14 Ultra 16GB+512GB', 2, 6499.00, 6999.00, 120, 89, '["/images/products/product_3_1.jpg", "/images/products/product_3_2.jpg"]', '小米14 Ultra，徕卡光学镜头，骁龙8 Gen3', 1)
 ON DUPLICATE KEY UPDATE name = name;
 
 INSERT INTO product (id, name, category_id, price, original_price, stock, sales, images, description, status)
-VALUES (4, 'MacBook Pro 14英寸 M3 Pro', 5, 16999.00, 18999.00, 50, 67, '["/uploads/cache/macbook0_400x400.jpg", "/uploads/cache/macbook1_400x400.jpg"]', 'MacBook Pro 14英寸，M3 Pro芯片，18小时续航', 1)
+VALUES (4, 'MacBook Pro 14英寸 M3 Pro', 5, 16999.00, 18999.00, 50, 67, '["/images/products/product_4_1.jpg", "/images/products/product_4_2.jpg"]', 'MacBook Pro 14英寸，M3 Pro芯片，18小时续航', 1)
 ON DUPLICATE KEY UPDATE name = name;
 
 INSERT INTO product (id, name, category_id, price, original_price, stock, sales, images, description, status)
-VALUES (5, 'ThinkPad X1 Carbon 2024', 5, 12999.00, 14999.00, 60, 45, '["/uploads/cache/thinkpad0_400x400.jpg", "/uploads/cache/thinkpad1_400x400.jpg"]', 'ThinkPad X1 Carbon，Intel酷睿Ultra7，轻薄商务本', 1)
+VALUES (5, 'ThinkPad X1 Carbon 2024', 5, 12999.00, 14999.00, 60, 45, '["/images/products/product_5_1.jpg", "/images/products/product_5_2.jpg"]', 'ThinkPad X1 Carbon，Intel酷睿Ultra7，轻薄商务本', 1)
 ON DUPLICATE KEY UPDATE name = name;
 
 INSERT INTO product (id, name, category_id, price, original_price, stock, sales, images, description, status)
-VALUES (6, 'AirPods Pro 2代 USB-C', 3, 1799.00, 1999.00, 200, 520, '["/uploads/cache/airpods0_400x400.jpg"]', 'Apple AirPods Pro 2代，主动降噪，自适应音频', 1)
+VALUES (6, 'AirPods Pro 2代 USB-C', 3, 1799.00, 1999.00, 200, 520, '["/images/products/product_6_1.jpg", "/images/products/product_6_2.jpg"]', 'Apple AirPods Pro 2代，主动降噪，自适应音频', 1)
 ON DUPLICATE KEY UPDATE name = name;
 
 INSERT INTO product (id, name, category_id, price, original_price, stock, sales, images, description, status)
-VALUES (7, 'Sony WH-1000XM5 头戴式耳机', 3, 2499.00, 2999.00, 80, 156, '["/uploads/cache/sony0_400x400.jpg", "/uploads/cache/sony1_400x400.jpg"]', 'Sony WH-1000XM5，业界领先降噪，30小时续航', 1)
+VALUES (7, 'Sony WH-1000XM5 头戴式耳机', 3, 2499.00, 2999.00, 80, 156, '["/images/products/product_7_1.jpg", "/images/products/product_7_2.jpg"]', 'Sony WH-1000XM5，业界领先降噪，30小时续航', 1)
 ON DUPLICATE KEY UPDATE name = name;
 
 INSERT INTO product (id, name, category_id, price, original_price, stock, sales, images, description, status)
-VALUES (8, '戴森 V15 吸尘器', 9, 4990.00, 5990.00, 40, 78, '["/uploads/cache/dyson0_400x400.jpg"]', '戴森 V15 Detect，激光探测灰尘，智能感应', 1)
+VALUES (8, '戴森 V15 吸尘器', 9, 4990.00, 5990.00, 40, 78, '["/images/products/product_8_1.jpg", "/images/products/product_8_2.jpg"]', '戴森 V15 Detect，激光探测灰尘，智能感应', 1)
 ON DUPLICATE KEY UPDATE name = name;
 
 INSERT INTO product (id, name, category_id, price, original_price, stock, sales, images, description, status)
-VALUES (9, '美的空调 3匹 新一级能效', 8, 5999.00, 7999.00, 30, 34, '["/uploads/cache/midea0_400x400.jpg"]', '美的空调，新一级能效，智能温控，静音设计', 1)
+VALUES (9, '美的空调 3匹 新一级能效', 8, 5999.00, 7999.00, 30, 34, '["/images/products/product_9_1.jpg", "/images/products/product_9_2.jpg"]', '美的空调，新一级能效，智能温控，静音设计', 1)
 ON DUPLICATE KEY UPDATE name = name;
 
 INSERT INTO product (id, name, category_id, price, original_price, stock, sales, images, description, status)
-VALUES (10, '西门子冰箱 500L 对开门', 8, 7999.00, 9999.00, 25, 23, '["/uploads/cache/siemens0_400x400.jpg"]', '西门子对开门冰箱，500L大容量，变频节能', 1)
+VALUES (10, '西门子冰箱 500L 对开门', 8, 7999.00, 9999.00, 25, 23, '["/images/products/product_10_1.jpg", "/images/products/product_10_2.jpg"]', '西门子对开门冰箱，500L大容量，变频节能', 1)
 ON DUPLICATE KEY UPDATE name = name;
 
 INSERT INTO product (id, name, category_id, price, original_price, stock, sales, images, description, status)
-VALUES (11, 'RTX 4090 显卡 24GB', 6, 14999.00, 16999.00, 20, 45, '["/uploads/cache/rtx0_400x400.jpg"]', 'NVIDIA RTX 4090，24GB显存，旗舰级游戏显卡', 1)
+VALUES (11, 'RTX 4090 显卡 24GB', 6, 14999.00, 16999.00, 20, 45, '["/images/products/product_11_1.jpg", "/images/products/product_11_2.jpg"]', 'NVIDIA RTX 4090，24GB显存，旗舰级游戏显卡', 1)
 ON DUPLICATE KEY UPDATE name = name;
 
 INSERT INTO product (id, name, category_id, price, original_price, stock, sales, images, description, status)
-VALUES (12, 'Samsung 990 Pro 2TB SSD', 6, 1299.00, 1599.00, 150, 89, '["/uploads/cache/ssd0_400x400.jpg"]', '三星990 Pro，PCIe 4.0，读写速度7450MB/s', 1)
+VALUES (12, 'Samsung 990 Pro 2TB SSD', 6, 1299.00, 1599.00, 150, 89, '["/images/products/product_12_1.jpg", "/images/products/product_12_2.jpg"]', '三星990 Pro，PCIe 4.0，读写速度7450MB/s', 1)
 ON DUPLICATE KEY UPDATE name = name;

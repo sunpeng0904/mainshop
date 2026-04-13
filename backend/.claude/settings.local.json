@@ -10,7 +10,12 @@
       "Bash(mysql:*)",
       "Bash(mvn compile:*)",
       "Bash(curl:*)",
-      "Read(//d/项目/openclaw/test/online-mall/**)"
+      "Read(//d/项目/openclaw/test/online-mall/**)",
+      "Bash(cp uploads/cache/iphone0_400x400.jpg src/main/resources/static/images/products/product_1_1.jpg)",
+      "Bash(cp uploads/cache/iphone1_400x400.jpg src/main/resources/static/images/products/product_1_2.jpg)",
+      "Bash(cp uploads/cache/huawei0_400x400.jpg src/main/resources/static/images/products/product_2_1.jpg)",
+      "Bash(cp uploads/cache/huawei1_400x400.jpg src/main/resources/static/images/products/product_2_2.jpg)",
+      "Bash(cp uploads/cache/xiaomi0_400x400.jpg src/main/resources/static/images/products/product_3_1.jpg)"
     ]
   }
 }

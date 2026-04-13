@@ -85,6 +85,7 @@ app:
   # 图片缓存配置
   image:
     cache-path: ./uploads/cache/
+    products-path: ./src/main/resources/static/images/products/
   
 # 跨域配置（在代码中通过@CrossOrigin或WebMvcConfigurer配置）
 # cors配置已移除，将在代码中配置

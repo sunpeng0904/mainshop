@@ -20,12 +20,15 @@ public class WebMvcConfig implements WebMvcConfigurer {
     @Value("${app.image.cache-path:./uploads/cache/}")
     private String cachePath;
 
+    @Value("${app.image.products-path:./src/main/resources/static/images/products/}")
+    private String productsPath;
+
     /**
      * 配置静态资源映射
      */
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
-        log.info("配置静态资源映射: uploadPath={}, cachePath={}", uploadPath, cachePath);
+        log.info("配置静态资源映射: uploadPath={}, cachePath={}, productsPath={}", uploadPath, cachePath, productsPath);
 
         // 映射上传文件目录
         registry.addResourceHandler("/uploads/**")
@@ -35,7 +38,11 @@ public class WebMvcConfig implements WebMvcConfigurer {
         registry.addResourceHandler("/uploads/cache/**")
                 .addResourceLocations("file:" + cachePath);
 
-        // 映射静态资源目录（商品图片等）
+        // 映射商品图片目录（优先从文件系统加载，支持动态下载）
+        registry.addResourceHandler("/images/products/**")
+                .addResourceLocations("file:" + productsPath);
+
+        // 映射静态资源目录（其他静态图片等）
         registry.addResourceHandler("/images/**")
                 .addResourceLocations("classpath:/static/images/");
     }

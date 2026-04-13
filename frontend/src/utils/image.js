@@ -2,9 +2,6 @@
  * 图片URL处理工具
  */
 
-// 静态资源路径（通过后端直接访问）
-const STATIC_PATHS = ['/uploads/', '/images/', '/static/']
-
 // 默认占位图
 const DEFAULT_IMAGE = 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0MDAiIGhlaWdodD0iNDAwIiB2aWV3Qm94PSIwIDAgNDAwIDQwMCI+PHJlY3Qgd2lkdGg9IjQwMCIgaGVpZ2h0PSI0MDAiIGZpbGw9IiNmNWY3ZmEiLz48dGV4dCB4PSIxNTAiIHk9IjIwMCIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXNpemU9IjI0IiBmaWxsPSIjOTB5OTl6Ij7mlrDmiqXoioLngrk8L3RleHQ+PC9zdmc+'
 
@@ -33,17 +30,8 @@ export function getImageUrl(path) {
     path = '/' + path
   }
 
-  // 检查是否是静态资源路径（通过后端访问）
-  const isStaticPath = STATIC_PATHS.some(prefix => path.startsWith(prefix))
-  if (isStaticPath) {
-    // 开发环境通过代理访问，生产环境直接访问
-    if (process.env.NODE_ENV === 'development') {
-      return path  // 通过 vue.config.js 的代理
-    }
-    return path
-  }
-
-  // 其他路径添加 /api 前缀
+  // 图片路径统一通过后端API访问（后端context-path为/api）
+  // 开发环境通过vue.config.js代理，生产环境直接访问
   return '/api' + path
 }
 
