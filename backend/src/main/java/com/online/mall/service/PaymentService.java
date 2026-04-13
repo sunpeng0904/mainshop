@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import com.online.mall.dto.PaymentDTO;
 import com.online.mall.entity.Payment;
 import com.online.mall.vo.PaymentVO;
+import com.online.mall.vo.WechatPayVO;
 
 /**
  * 支付服务接口
@@ -14,6 +15,21 @@ public interface PaymentService extends IService<Payment> {
      * 创建支付
      */
     PaymentVO createPayment(Long userId, PaymentDTO paymentDTO);
+
+    /**
+     * 创建微信Native支付
+     */
+    WechatPayVO createWechatNativePayment(Long userId, Long orderId);
+
+    /**
+     * 处理微信支付回调
+     */
+    boolean handleWechatCallback(String notifyData);
+
+    /**
+     * 模拟微信支付成功
+     */
+    void mockWechatPaySuccess(String orderNo);
 
     /**
      * 模拟支付成功

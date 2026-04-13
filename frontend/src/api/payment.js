@@ -14,6 +14,30 @@ export function createPayment(data) {
 }
 
 /**
+ * 创建微信Native支付（扫码支付）
+ * @param {number} orderId - 订单ID
+ */
+export function createWechatNativePayment(orderId) {
+  return request.post(`/payment/wechat/native/${orderId}`)
+}
+
+/**
+ * 查询微信支付状态
+ * @param {string} orderNo - 订单编号
+ */
+export function queryWechatPayStatus(orderNo) {
+  return request.get(`/payment/wechat/status/${orderNo}`)
+}
+
+/**
+ * 模拟微信支付成功（沙箱测试）
+ * @param {string} orderNo - 订单编号
+ */
+export function mockWechatPaySuccess(orderNo) {
+  return request.post(`/payment/wechat/mock-success/${orderNo}`)
+}
+
+/**
  * 模拟支付成功（用于测试）
  * @param {string} paymentNo - 支付流水号
  */

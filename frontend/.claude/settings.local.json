@@ -10,7 +10,8 @@
       "Bash(taskkill /F /IM node.exe)",
       "Bash(netstat -ano)",
       "Bash(findstr \":8080\\\\|:8081\\\\|:8082\\\\|:8083\\\\|:8084\")",
-      "Bash(python -m json.tool)"
+      "Bash(python -m json.tool)",
+      "Bash(mvn compile:*)"
     ]
   }
 }

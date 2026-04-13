@@ -109,3 +109,12 @@ springdoc:
     path: /swagger-ui.html
     operations-sorter: method
     tags-sorter: alpha
+
+# 微信支付配置（沙箱测试模式）
+wechat:
+  pay:
+    app-id: wx1234567890abcdef
+    mch-id: 1234567890
+    api-v3-key: sandbox-api-v3-key-32-characters-long
+    notify-url: http://localhost:8082/api/payment/wechat/callback
+    sandbox: true

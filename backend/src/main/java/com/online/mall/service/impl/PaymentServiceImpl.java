@@ -9,7 +9,9 @@ import com.online.mall.entity.Payment;
 import com.online.mall.mapper.PaymentMapper;
 import com.online.mall.service.OrderService;
 import com.online.mall.service.PaymentService;
+import com.online.mall.service.WechatPayService;
 import com.online.mall.vo.PaymentVO;
+import com.online.mall.vo.WechatPayVO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,6 +32,9 @@ public class PaymentServiceImpl extends ServiceImpl<PaymentMapper, Payment> impl
 
     @Autowired
     private OrderService orderService;
+
+    @Autowired
+    private WechatPayService wechatPayService;
 
     @Override
     @Transactional
@@ -205,6 +210,104 @@ public class PaymentServiceImpl extends ServiceImpl<PaymentMapper, Payment> impl
         }
 
         return convertToVO(payment);
+    }
+
+    @Override
+    @Transactional
+    public WechatPayVO createWechatNativePayment(Long userId, Long orderId) {
+        log.info("创建微信Native支付: userId={}, orderId={}", userId, orderId);
+
+        // 获取订单
+        Order order = orderService.getById(orderId);
+        if (order == null || !order.getUserId().equals(userId)) {
+            throw new BusinessException("订单不存在");
+        }
+
+        if (order.getStatus() != Order.STATUS_PENDING_PAYMENT) {
+            throw new BusinessException("订单状态不允许支付");
+        }
+
+        // 创建支付记录
+        Payment payment = getOne(new QueryWrapper<Payment>()
+                .eq("order_id", order.getId())
+                .eq("status", PaymentStatus.PENDING));
+
+        if (payment == null) {
+            payment = new Payment();
+            payment.setPaymentNo(generatePaymentNo());
+            payment.setOrderId(order.getId());
+            payment.setOrderNo(order.getOrderNo());
+            payment.setUserId(userId);
+            payment.setAmount(order.getPayAmount());
+            payment.setPayType(Order.PAY_TYPE_WECHAT);
+            payment.setStatus(PaymentStatus.PENDING);
+            save(payment);
+        }
+
+        // 调用微信支付服务
+        WechatPayVO vo = wechatPayService.createNativePayment(
+                orderId,
+                order.getOrderNo(),
+                order.getPayAmount().toString(),
+                "订单-" + order.getOrderNo()
+        );
+
+        log.info("微信Native支付创建成功: orderNo={}, codeUrl={}", order.getOrderNo(), vo.getCodeUrl());
+        return vo;
+    }
+
+    @Override
+    @Transactional
+    public boolean handleWechatCallback(String notifyData) {
+        log.info("处理微信支付回调");
+
+        // 沙箱模式：模拟处理
+        // 实际生产环境需要验签并解析回调数据
+        boolean success = wechatPayService.handleCallback(notifyData);
+
+        if (success) {
+            log.info("微信支付回调处理成功");
+        }
+
+        return success;
+    }
+
+    @Override
+    @Transactional
+    public void mockWechatPaySuccess(String orderNo) {
+        log.info("模拟微信支付成功: orderNo={}", orderNo);
+
+        // 获取订单
+        Order order = orderService.getOne(new QueryWrapper<Order>().eq("order_no", orderNo));
+        if (order == null) {
+            throw new BusinessException("订单不存在");
+        }
+
+        // 获取支付记录
+        Payment payment = getOne(new QueryWrapper<Payment>()
+                .eq("order_id", order.getId())
+                .eq("status", PaymentStatus.PENDING));
+
+        if (payment == null) {
+            throw new BusinessException("支付记录不存在");
+        }
+
+        // 更新支付状态
+        payment.setStatus(PaymentStatus.SUCCESS);
+        payment.setTradeNo("WX_TRADE_" + System.currentTimeMillis());
+        payment.setPayTime(LocalDateTime.now());
+        payment.setNotifyData("{\"status\":\"success\",\"mock\":true,\"payType\":\"wechat\"}");
+        updateById(payment);
+
+        // 更新订单状态
+        if (order.getStatus() == Order.STATUS_PENDING_PAYMENT) {
+            order.setStatus(Order.STATUS_PENDING_SHIPMENT);
+            order.setPayTime(LocalDateTime.now());
+            order.setPayType(Order.PAY_TYPE_WECHAT);
+            orderService.updateById(order);
+        }
+
+        log.info("微信支付成功: orderNo={}", orderNo);
     }
 
     /**

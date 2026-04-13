@@ -126,9 +126,9 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product> impl
         if ("price".equals(queryDTO.getSortField())) {
             wrapper.orderBy(true, "asc".equals(queryDTO.getSortOrder()), "price");
         } else if ("sales".equals(queryDTO.getSortField())) {
-            wrapper.orderByDesc("sales");
+            wrapper.orderBy(true, "asc".equals(queryDTO.getSortOrder()), "sales");
         } else {
-            wrapper.orderByDesc("create_time");
+            wrapper.orderBy(true, "asc".equals(queryDTO.getSortOrder()), "create_time");
         }
 
         Page<Product> productPage = page(page, wrapper);

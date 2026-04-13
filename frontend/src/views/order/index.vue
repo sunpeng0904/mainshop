@@ -53,7 +53,7 @@
           </div>
           <div class="order-actions">
             <el-button
-              v-if="order.status === 0"
+              v-if="Number(order.status) === 0"
               type="primary"
               size="small"
               @click="handlePay(order)"
@@ -61,7 +61,7 @@
               立即付款
             </el-button>
             <el-button
-              v-if="order.status === 2"
+              v-if="Number(order.status) === 2"
               type="success"
               size="small"
               @click="handleConfirm(order)"
@@ -69,14 +69,14 @@
               确认收货
             </el-button>
             <el-button
-              v-if="order.status === 0"
+              v-if="Number(order.status) === 0"
               size="small"
               @click="handleCancel(order)"
             >
               取消订单
             </el-button>
             <el-button
-              v-if="order.status === 3 || order.status === 4"
+              v-if="Number(order.status) === 3 || Number(order.status) === 4"
               size="small"
               @click="handleDelete(order)"
             >
@@ -97,6 +97,14 @@
         @current-change="fetchOrders"
       />
     </div>
+
+    <!-- 微信支付对话框 -->
+    <PayDialog
+      v-model="payDialogVisible"
+      :order-id="currentOrder?.id"
+      :amount="currentOrder?.payAmount"
+      @success="handlePaySuccess"
+    />
   </div>
 </template>
 
@@ -105,8 +113,8 @@ import { ref, reactive, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { getOrderList, cancelOrder, confirmOrder, deleteOrder, getOrderStatusMap } from '@/api/order'
-import { createPayment, mockPaymentSuccess, getPaymentByOrderId } from '@/api/payment'
 import { getImageUrl } from '@/utils/image'
+import PayDialog from '@/components/PayDialog.vue'
 
 const router = useRouter()
 
@@ -120,11 +128,15 @@ const pagination = reactive({
   total: 0
 })
 
+// 支付对话框
+const payDialogVisible = ref(false)
+const currentOrder = ref(null)
+
 // 状态类型映射
 const statusMap = getOrderStatusMap()
 
 const getStatusType = (status) => {
-  return statusMap[status]?.type || 'info'
+  return statusMap[Number(status)]?.type || 'info'
 }
 
 // 格式化时间
@@ -165,29 +177,16 @@ const handleStatusChange = () => {
   fetchOrders()
 }
 
-// 立即付款
-const handlePay = async (order) => {
-  try {
-    await ElMessageBox.confirm('确认支付该订单？', '支付确认', {
-      type: 'info'
-    })
+// 立即付款 - 打开微信支付对话框
+const handlePay = (order) => {
+  currentOrder.value = order
+  payDialogVisible.value = true
+}
 
-    // 创建支付
-    const paymentRes = await createPayment({
-      orderId: order.id,
-      payType: order.payType || 1
-    })
-
-    // 模拟支付成功
-    await mockPaymentSuccess(paymentRes.data.paymentNo)
-
-    ElMessage.success('支付成功')
-    fetchOrders()
-  } catch (e) {
-    if (e !== 'cancel') {
-      console.error('支付失败:', e)
-    }
-  }
+// 支付成功回调
+const handlePaySuccess = () => {
+  ElMessage.success('支付成功')
+  fetchOrders()
 }
 
 // 确认收货

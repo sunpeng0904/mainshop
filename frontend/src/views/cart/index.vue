@@ -126,8 +126,18 @@
         <div class="pay-type-section">
           <h4>支付方式</h4>
           <el-radio-group v-model="payType">
-            <el-radio :value="1">支付宝</el-radio>
-            <el-radio :value="2">微信支付</el-radio>
+            <el-radio :value="2">
+              <span class="pay-type-label">
+                <el-icon><ChatDotRound /></el-icon>
+                微信支付
+              </span>
+            </el-radio>
+            <el-radio :value="1">
+              <span class="pay-type-label">
+                <el-icon><Wallet /></el-icon>
+                支付宝
+              </span>
+            </el-radio>
           </el-radio-group>
         </div>
 
@@ -140,7 +150,7 @@
         <span class="total">实付：<strong>¥{{ selectedTotalPrice }}</strong></span>
         <el-button @click="checkoutDialogVisible = false">取消</el-button>
         <el-button type="primary" :loading="submitting" @click="submitOrder">
-          提交订单
+          立即支付
         </el-button>
       </template>
     </el-dialog>
@@ -161,6 +171,14 @@
         </div>
       </div>
     </el-dialog>
+
+    <!-- 微信支付对话框 -->
+    <PayDialog
+      v-model="payDialogVisible"
+      :order-id="currentOrder?.id"
+      :amount="currentOrder?.payAmount"
+      @success="handlePaySuccess"
+    />
   </div>
 </template>
 
@@ -169,10 +187,11 @@ import { ref, computed, onMounted } from 'vue'
 import { useStore } from 'vuex'
 import { useRouter } from 'vue-router'
 import { ElMessage, ElMessageBox } from 'element-plus'
+import { ChatDotRound, Wallet } from '@element-plus/icons-vue'
 import { getAddressList, getDefaultAddress } from '@/api/address'
 import { createOrder } from '@/api/order'
-import { createPayment, mockPaymentSuccess } from '@/api/payment'
 import { getImageUrl } from '@/utils/image'
+import PayDialog from '@/components/PayDialog.vue'
 
 const store = useStore()
 const router = useRouter()
@@ -207,8 +226,12 @@ const submitting = ref(false)
 // 地址相关
 const addressList = ref([])
 const selectedAddress = ref(null)
-const payType = ref(1)
+const payType = ref(2) // 默认微信支付
 const remark = ref('')
+
+// 支付对话框
+const payDialogVisible = ref(false)
+const currentOrder = ref(null)
 
 // 获取购物车列表
 const fetchCartList = async () => {
@@ -358,31 +381,28 @@ const submitOrder = async () => {
 
     ElMessage.success('订单创建成功')
 
-    // 创建支付
-    const paymentRes = await createPayment({
-      orderId: order.id,
-      payType: payType.value
-    })
-    const payment = paymentRes.data
-
-    // 模拟支付（测试环境）
-    await mockPaymentSuccess(payment.paymentNo)
-
-    ElMessage.success('支付成功')
-
     // 刷新购物车
     await store.dispatch('cart/getCartList')
 
+    // 关闭结算弹窗
     checkoutDialogVisible.value = false
 
-    // 跳转到订单列表
-    router.push('/order')
+    // 打开支付对话框
+    currentOrder.value = order
+    payDialogVisible.value = true
   } catch (error) {
     console.error('订单创建失败:', error)
     ElMessage.error(error.message || '订单创建失败')
   } finally {
     submitting.value = false
   }
+}
+
+// 支付成功回调
+const handlePaySuccess = () => {
+  ElMessage.success('支付成功')
+  // 跳转到订单列表
+  router.push('/order')
 }
 
 onMounted(() => {
@@ -583,6 +603,16 @@ onMounted(() => {
       border-color: #409EFF;
       background-color: #ecf5ff;
     }
+  }
+}
+
+.pay-type-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+
+  .el-icon {
+    font-size: 18px;
   }
 }
 </style>
