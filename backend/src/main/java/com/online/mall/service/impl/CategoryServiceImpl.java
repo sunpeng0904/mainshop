@@ -40,11 +40,41 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryMapper, Category> i
     }
 
     @Override
+    public List<CategoryVO> getAllCategoryTree() {
+        // 获取所有分类（包含禁用）
+        List<Category> allCategories = this.list(
+            new LambdaQueryWrapper<Category>()
+                .orderByAsc(Category::getSort)
+        );
+
+        // 转换为VO
+        List<CategoryVO> allVOs = allCategories.stream()
+            .map(this::convertToVO)
+            .collect(Collectors.toList());
+
+        // 构建树形结构
+        return buildTree(allVOs, 0L);
+    }
+
+    @Override
     public List<CategoryVO> getTopCategories() {
         List<Category> categories = this.list(
             new LambdaQueryWrapper<Category>()
                 .eq(Category::getParentId, 0)
                 .eq(Category::getStatus, 1)
+                .orderByAsc(Category::getSort)
+        );
+
+        return categories.stream()
+            .map(this::convertToVO)
+            .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<CategoryVO> getAllTopCategories() {
+        List<Category> categories = this.list(
+            new LambdaQueryWrapper<Category>()
+                .eq(Category::getParentId, 0)
                 .orderByAsc(Category::getSort)
         );
 
@@ -68,6 +98,19 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryMapper, Category> i
     }
 
     @Override
+    public List<CategoryVO> getAllChildrenCategories(Long parentId) {
+        List<Category> categories = this.list(
+            new LambdaQueryWrapper<Category>()
+                .eq(Category::getParentId, parentId)
+                .orderByAsc(Category::getSort)
+        );
+
+        return categories.stream()
+            .map(this::convertToVO)
+            .collect(Collectors.toList());
+    }
+
+    @Override
     public CategoryVO getCategoryById(Long categoryId) {
         Category category = this.getById(categoryId);
         if (category == null) {
@@ -75,7 +118,7 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryMapper, Category> i
         }
         CategoryVO vo = convertToVO(category);
         // 加载子分类
-        vo.setChildren(getChildrenCategories(categoryId));
+        vo.setChildren(getAllChildrenCategories(categoryId));
         return vo;
     }
 
@@ -100,9 +143,19 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryMapper, Category> i
                 .eq(Category::getParentId, categoryId)
         );
         if (count > 0) {
-            throw new BusinessException("category.has.children");
+            throw new BusinessException("该分类下存在子分类，无法删除");
         }
         this.removeById(categoryId);
+    }
+
+    @Override
+    public void updateStatus(Long categoryId, Integer status) {
+        Category category = this.getById(categoryId);
+        if (category == null) {
+            throw new BusinessException("分类不存在");
+        }
+        category.setStatus(status);
+        this.updateById(category);
     }
 
     /**

@@ -169,6 +169,16 @@ const routes = [
           icon: 'Key',
           requiresAdmin: true
         }
+      },
+      {
+        path: 'categories',
+        name: 'AdminCategories',
+        component: () => import('@/views/admin/categories/index.vue'),
+        meta: {
+          title: '分类管理',
+          icon: 'Menu',
+          requiresAdmin: true
+        }
       }
     ]
   },
