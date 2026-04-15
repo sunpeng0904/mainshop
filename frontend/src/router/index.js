@@ -88,6 +88,16 @@ const routes = [
           requiresAuth: true,
           icon: 'User'
         }
+      },
+      {
+        path: 'lottery',
+        name: 'Lottery',
+        component: () => import('@/views/lottery/index.vue'),
+        meta: {
+          title: '五一抽奖',
+          requiresAuth: true,
+          icon: 'Present'
+        }
       }
     ]
   },

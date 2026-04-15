@@ -65,6 +65,12 @@
         </el-button>
       </el-badge>
 
+      <!-- 五一抽奖活动入口 -->
+      <el-button type="danger" class="lottery-btn" @click="$router.push('/lottery')">
+        <el-icon><Present /></el-icon>
+        <span>五一抽奖</span>
+      </el-button>
+
       <!-- 用户菜单 -->
       <template v-if="isLogin">
         <el-dropdown @command="handleUserCommand">
@@ -112,6 +118,7 @@ import { useStore } from 'vuex'
 import { useRouter, useRoute } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { ElMessage, ElMessageBox } from 'element-plus'
+import { Present } from '@element-plus/icons-vue'
 import { setLanguage } from '@/locales'
 
 const { t, locale } = useI18n()
@@ -269,5 +276,28 @@ const handleUserCommand = async (command) => {
 :deep(.el-dropdown-menu__item.active) {
   color: #409EFF;
   background-color: #ecf5ff;
+}
+
+.lottery-btn {
+  background: linear-gradient(135deg, #FF6B6B 0%, #FF8E53 100%);
+  border: none;
+  animation: pulse 2s infinite;
+
+  &:hover {
+    background: linear-gradient(135deg, #FF5252 0%, #FF7043 100%);
+  }
+
+  .el-icon {
+    margin-right: 4px;
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
 }
 </style>
