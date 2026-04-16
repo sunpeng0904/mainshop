@@ -99,10 +99,20 @@ public class LotteryServiceImpl extends ServiceImpl<LotteryPrizeMapper, LotteryP
         record.setReceiveStatus(winPrize.getLevel() < 4 ? 0 : 1); // 谢谢参与自动已领取
         recordMapper.insert(record);
 
-        // 扣减库存（谢谢参与不扣减）
+        // 扣减库存（谢谢参与不扣减）- 使用乐观锁重试
         if (winPrize.getLevel() < 4) {
-            winPrize.setIssued(winPrize.getIssued() + 1);
-            this.updateById(winPrize);
+            boolean success = deductStockWithRetry(winPrize.getId());
+            if (!success) {
+                log.warn("用户 {} 中奖 {} 但库存扣减失败，降级为谢谢参与", username, winPrize.getName());
+                // 库存扣减失败，降级为谢谢参与
+                record.setPrizeLevel(4);
+                record.setPrizeName("谢谢参与");
+                recordMapper.updateById(record);
+                winPrize = prizes.stream()
+                    .filter(p -> p.getLevel() == 4)
+                    .findFirst()
+                    .orElse(winPrize);
+            }
         }
 
         // 返回结果
@@ -118,6 +128,26 @@ public class LotteryServiceImpl extends ServiceImpl<LotteryPrizeMapper, LotteryP
 
         log.info("用户 {} 抽奖结果: {}", username, winPrize.getName());
         return vo;
+    }
+
+    /**
+     * 使用乐观锁扣减库存（带重试）
+     */
+    private boolean deductStockWithRetry(Long prizeId) {
+        int maxRetry = 3;
+        for (int i = 0; i < maxRetry; i++) {
+            LotteryPrize prize = this.getById(prizeId);
+            if (prize == null || prize.getIssued() >= prize.getStock()) {
+                return false;
+            }
+            prize.setIssued(prize.getIssued() + 1);
+            boolean updated = this.updateById(prize);
+            if (updated) {
+                return true;
+            }
+            log.debug("乐观锁重试第 {} 次", i + 1);
+        }
+        return false;
     }
 
     @Override

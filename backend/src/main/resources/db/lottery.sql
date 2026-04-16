@@ -13,6 +13,7 @@ CREATE TABLE IF NOT EXISTS `lottery_prize` (
   `issued` int NOT NULL DEFAULT '0' COMMENT '已发放数量',
   `status` int NOT NULL DEFAULT '1' COMMENT '状态 0-禁用 1-启用',
   `sort` int NOT NULL DEFAULT '0' COMMENT '排序',
+  `version` int NOT NULL DEFAULT '0' COMMENT '乐观锁版本号',
   `create_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
   `update_time` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
   PRIMARY KEY (`id`)

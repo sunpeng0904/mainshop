@@ -53,7 +53,7 @@
         <span class="col-price">¥{{ item.productPrice || 0 }}</span>
         <div class="col-quantity">
           <el-input-number
-            v-model="item.quantity"
+            :model-value="item.quantity"
             :min="1"
             :max="item.productStock || 999"
             size="small"
