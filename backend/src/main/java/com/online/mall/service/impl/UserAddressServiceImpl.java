@@ -7,15 +7,19 @@ import com.online.mall.common.BusinessException;
 import com.online.mall.dto.AddressDTO;
 import com.online.mall.entity.UserAddress;
 import com.online.mall.mapper.UserAddressMapper;
+import com.online.mall.service.RegionService;
 import com.online.mall.service.UserAddressService;
 import com.online.mall.vo.AddressVO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * 用户地址服务实现
@@ -23,6 +27,9 @@ import java.util.List;
 @Slf4j
 @Service
 public class UserAddressServiceImpl extends ServiceImpl<UserAddressMapper, UserAddress> implements UserAddressService {
+
+    @Autowired
+    private RegionService regionService;
 
     @Override
     public List<AddressVO> getAddressList(Long userId) {
@@ -177,16 +184,40 @@ public class UserAddressServiceImpl extends ServiceImpl<UserAddressMapper, UserA
         AddressVO vo = new AddressVO();
         BeanUtils.copyProperties(address, vo);
 
+        // 设置码值
+        vo.setProvinceCode(address.getProvinceCode());
+        vo.setCityCode(address.getCityCode());
+        vo.setDistrictCode(address.getDistrictCode());
+
+        // 查询区域名称
+        List<String> codes = new ArrayList<>();
+        if (address.getProvinceCode() != null) {
+            codes.add(address.getProvinceCode());
+        }
+        if (address.getCityCode() != null) {
+            codes.add(address.getCityCode());
+        }
+        if (address.getDistrictCode() != null) {
+            codes.add(address.getDistrictCode());
+        }
+
+        if (!codes.isEmpty()) {
+            Map<String, String> nameMap = regionService.getRegionNamesByCodes(codes);
+            vo.setProvinceName(nameMap.get(address.getProvinceCode()));
+            vo.setCityName(nameMap.get(address.getCityCode()));
+            vo.setDistrictName(nameMap.get(address.getDistrictCode()));
+        }
+
         // 拼接完整地址
         StringBuilder fullAddress = new StringBuilder();
-        if (address.getProvince() != null) {
-            fullAddress.append(address.getProvince());
+        if (vo.getProvinceName() != null) {
+            fullAddress.append(vo.getProvinceName());
         }
-        if (address.getCity() != null) {
-            fullAddress.append(address.getCity());
+        if (vo.getCityName() != null) {
+            fullAddress.append(vo.getCityName());
         }
-        if (address.getDistrict() != null) {
-            fullAddress.append(address.getDistrict());
+        if (vo.getDistrictName() != null) {
+            fullAddress.append(vo.getDistrictName());
         }
         if (address.getDetailAddress() != null) {
             fullAddress.append(address.getDetailAddress());

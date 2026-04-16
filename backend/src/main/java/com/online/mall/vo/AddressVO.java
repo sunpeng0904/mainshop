@@ -21,14 +21,23 @@ public class AddressVO {
     @Schema(description = "收货人电话")
     private String receiverPhone;
 
-    @Schema(description = "省")
-    private String province;
+    @Schema(description = "省份编码")
+    private String provinceCode;
 
-    @Schema(description = "市")
-    private String city;
+    @Schema(description = "省份名称")
+    private String provinceName;
 
-    @Schema(description = "区")
-    private String district;
+    @Schema(description = "城市编码")
+    private String cityCode;
+
+    @Schema(description = "城市名称")
+    private String cityName;
+
+    @Schema(description = "区县编码")
+    private String districtCode;
+
+    @Schema(description = "区县名称")
+    private String districtName;
 
     @Schema(description = "详细地址")
     private String detailAddress;

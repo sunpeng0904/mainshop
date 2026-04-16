@@ -6,54 +6,44 @@ import lombok.Data;
 import java.time.LocalDateTime;
 
 /**
- * 用户地址实体
+ * 区域实体（省市区）
  */
 @Data
-@TableName("user_address")
-public class UserAddress {
+@TableName("sys_region")
+public class Region {
 
     @TableId(type = IdType.AUTO)
     private Long id;
 
     /**
-     * 用户ID
+     * 区域编码（国标行政区划代码）
      */
-    private Long userId;
+    private String regionCode;
 
     /**
-     * 收货人姓名
+     * 区域名称
      */
-    private String receiverName;
+    private String regionName;
 
     /**
-     * 收货人电话
+     * 父级编码
      */
-    private String receiverPhone;
+    private String parentCode;
 
     /**
-     * 省份编码
+     * 层级: 1-省 2-市 3-区
      */
-    private String provinceCode;
+    private Integer level;
 
     /**
-     * 城市编码
+     * 排序
      */
-    private String cityCode;
+    private Integer sort;
 
     /**
-     * 区县编码
+     * 状态 0-禁用 1-启用
      */
-    private String districtCode;
-
-    /**
-     * 详细地址
-     */
-    private String detailAddress;
-
-    /**
-     * 是否默认地址 0-否 1-是
-     */
-    private Integer isDefault;
+    private Integer status;
 
     /**
      * 创建时间
@@ -68,7 +58,7 @@ public class UserAddress {
     private LocalDateTime updateTime;
 
     /**
-     * 删除标志
+     * 删除标志 0-未删除 1-已删除
      */
     @TableLogic
     private Integer deleted;

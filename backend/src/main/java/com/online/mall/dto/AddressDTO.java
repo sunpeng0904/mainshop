@@ -25,14 +25,14 @@ public class AddressDTO {
     @Schema(description = "收货人电话", required = true, example = "13800138000")
     private String receiverPhone;
 
-    @Schema(description = "省")
-    private String province;
+    @Schema(description = "省份编码")
+    private String provinceCode;
 
-    @Schema(description = "市")
-    private String city;
+    @Schema(description = "城市编码")
+    private String cityCode;
 
-    @Schema(description = "区")
-    private String district;
+    @Schema(description = "区县编码")
+    private String districtCode;
 
     @NotBlank(message = "{javax.validation.constraints.NotBlank.message}")
     @Schema(description = "详细地址", required = true, example = "望京SOHO T1 1001室")
