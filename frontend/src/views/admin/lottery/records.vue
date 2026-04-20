@@ -104,12 +104,7 @@
             </div>
           </template>
         </el-table-column>
-        <el-table-column label="奖品价值" width="100">
-          <template #default="{ row }">
-            ¥{{ row.prizeValue }}
-          </template>
-        </el-table-column>
-        <el-table-column label="领取状态" width="100">
+                <el-table-column label="领取状态" width="100">
           <template #default="{ row }">
             <el-tag :type="row.status === 1 ? 'success' : 'warning'">
               {{ row.status === 1 ? '已领取' : '待领取' }}

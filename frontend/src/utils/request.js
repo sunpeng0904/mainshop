@@ -40,28 +40,33 @@ service.interceptors.request.use(
 // 响应拦截器
 service.interceptors.response.use(
   response => {
+    // 如果是 blob 响应（文件下载），直接返回原始响应
+    if (response.config.responseType === 'blob') {
+      return response
+    }
+
     const res = response.data
-    
+
     // 业务成功
     if (res.code === 200) {
       return res
     }
-    
+
     // 业务错误
     if (res.code === 401) {
-      // token过期
+      // token过期，直接清除本地状态
       ElMessage.error('登录已过期，请重新登录')
-      store.dispatch('user/logout').then(() => {
-        window.location.href = '/login'
-      })
+      store.commit('user/CLEAR_USER')
+      localStorage.removeItem('mall_token')
+      window.location.href = '/login'
       return Promise.reject(new Error(res.message || 'Error'))
     }
-    
+
     if (res.code === 403) {
       ElMessage.error('权限不足')
       return Promise.reject(new Error(res.message || 'Error'))
     }
-    
+
     ElMessage.error(res.message || '请求失败')
     return Promise.reject(new Error(res.message || 'Error'))
   },
@@ -76,9 +81,9 @@ service.interceptors.response.use(
           break
         case 401:
           ElMessage.error('未授权，请重新登录')
-          store.dispatch('user/logout').then(() => {
-            window.location.href = '/login'
-          })
+          store.commit('user/CLEAR_USER')
+          localStorage.removeItem('mall_token')
+          window.location.href = '/login'
           break
         case 403:
           ElMessage.error('拒绝访问')
@@ -158,12 +163,32 @@ const request = {
       params,
       responseType: 'blob'
     }).then(response => {
+      // 检查响应内容类型，如果是 application/json 可能是错误
+      const contentType = response.headers['content-type']
+      if (contentType && contentType.includes('application/json')) {
+        // 可能是JSON错误响应，尝试解析
+        return response.data.text().then(text => {
+          try {
+            const errorData = JSON.parse(text)
+            ElMessage.error(errorData.message || '下载失败')
+            return Promise.reject(new Error(errorData.message || '下载失败'))
+          } catch (e) {
+            ElMessage.error('下载失败')
+            return Promise.reject(new Error('下载失败'))
+          }
+        })
+      }
+
+      // 正常文件下载
       const blob = new Blob([response.data])
       const link = document.createElement('a')
       link.href = window.URL.createObjectURL(blob)
       link.download = filename
+      document.body.appendChild(link)
       link.click()
+      document.body.removeChild(link)
       window.URL.revokeObjectURL(link.href)
+      return response
     })
   }
 }

@@ -39,8 +39,12 @@
             </div>
           </template>
         </el-table-column>
-        <el-table-column prop="quantity" label="奖品数量" width="100" />
-        <el-table-column prop="remainingQuantity" label="剩余数量" width="100" />
+        <el-table-column label="奖品数量" width="100">
+          <template #default="{ row }">{{ row.stock }}</template>
+        </el-table-column>
+        <el-table-column label="剩余数量" width="100">
+          <template #default="{ row }">{{ row.stock - row.issued }}</template>
+        </el-table-column>
         <el-table-column label="中奖率" width="100">
           <template #default="{ row }">
             {{ (row.probability * 100).toFixed(1) }}%
@@ -93,8 +97,8 @@
         <el-form-item label="奖品图片" prop="image">
           <el-input v-model="form.image" placeholder="请输入奖品图片URL" />
         </el-form-item>
-        <el-form-item label="奖品数量" prop="quantity">
-          <el-input-number v-model="form.quantity" :min="1" :max="10000" />
+        <el-form-item label="奖品数量" prop="stock">
+          <el-input-number v-model="form.stock" :min="1" :max="10000" />
         </el-form-item>
         <el-form-item label="中奖概率" prop="probability">
           <el-input-number
@@ -145,7 +149,7 @@ const form = reactive({
   level: null,
   name: '',
   image: '',
-  quantity: 1,
+  stock: 1,
   probabilityPercent: 0,
   probability: 0,
   value: 0,
@@ -155,7 +159,7 @@ const form = reactive({
 const rules = {
   level: [{ required: true, message: '请选择奖项等级', trigger: 'change' }],
   name: [{ required: true, message: '请输入奖品名称', trigger: 'blur' }],
-  quantity: [{ required: true, message: '请输入奖品数量', trigger: 'blur' }],
+  stock: [{ required: true, message: '请输入奖品数量', trigger: 'blur' }],
   probabilityPercent: [{ required: true, message: '请输入中奖概率', trigger: 'blur' }]
 }
 
@@ -198,7 +202,7 @@ const handleEdit = (row) => {
   form.level = row.level
   form.name = row.name
   form.image = row.image || ''
-  form.quantity = row.quantity
+  form.stock = row.stock
   form.probabilityPercent = row.probability * 100
   form.probability = row.probability
   form.value = row.value
@@ -254,7 +258,7 @@ const resetForm = () => {
   form.level = null
   form.name = ''
   form.image = ''
-  form.quantity = 1
+  form.stock = 1
   form.probabilityPercent = 0
   form.probability = 0
   form.value = 0
@@ -268,21 +272,26 @@ const handleSubmit = async () => {
     await formRef.value.validate()
     submitLoading.value = true
 
-    const data = {
+    const baseData = {
       level: form.level,
       name: form.name,
       image: form.image,
-      quantity: form.quantity,
-      probability: form.probabilityPercent / 100,
+      stock: form.stock,
+      probability: form.probabilityPercent,
       value: form.value,
       status: form.status
     }
 
     if (isEdit.value) {
-      await updatePrize(form.id, data)
+      await updatePrize(form.id, baseData)
       ElMessage.success('更新成功')
     } else {
-      await createPrize(data)
+      const createData = {
+        ...baseData,
+        issued: 0,
+        sort: form.level // 用等级作为排序
+      }
+      await createPrize(createData)
       ElMessage.success('创建成功')
     }
 
