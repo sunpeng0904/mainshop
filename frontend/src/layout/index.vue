@@ -67,8 +67,8 @@ const showSidebar = computed(() => {
 }
 
 .layout-content {
-  padding: 20px;
-  background-color: #f5f7fa;
+  padding: 10px;
+  background-color: #193258;
   min-height: calc(100vh - 60px);
 }
 
