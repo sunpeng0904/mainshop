@@ -189,6 +189,36 @@ const routes = [
           icon: 'Menu',
           requiresAdmin: true
         }
+      },
+      {
+        path: 'lottery',
+        name: 'AdminLottery',
+        redirect: '/admin/lottery/prizes',
+        meta: {
+          title: '抽奖管理',
+          icon: 'Present',
+          requiresAdmin: true
+        },
+        children: [
+          {
+            path: 'prizes',
+            name: 'AdminLotteryPrizes',
+            component: () => import('@/views/admin/lottery/prizes.vue'),
+            meta: {
+              title: '奖品管理',
+              requiresAdmin: true
+            }
+          },
+          {
+            path: 'records',
+            name: 'AdminLotteryRecords',
+            component: () => import('@/views/admin/lottery/records.vue'),
+            meta: {
+              title: '中奖记录',
+              requiresAdmin: true
+            }
+          }
+        ]
       }
     ]
   },

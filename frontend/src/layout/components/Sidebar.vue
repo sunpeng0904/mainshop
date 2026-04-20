@@ -38,6 +38,15 @@
         <el-menu-item index="/admin/users">用户列表</el-menu-item>
         <el-menu-item index="/admin/roles">角色管理</el-menu-item>
       </el-sub-menu>
+
+      <el-sub-menu index="lottery">
+        <template #title>
+          <el-icon><Present /></el-icon>
+          <span>抽奖管理</span>
+        </template>
+        <el-menu-item index="/admin/lottery/prizes">奖品管理</el-menu-item>
+        <el-menu-item index="/admin/lottery/records">中奖记录</el-menu-item>
+      </el-sub-menu>
     </el-menu>
   </div>
 </template>
