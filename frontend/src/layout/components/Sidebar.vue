@@ -47,6 +47,15 @@
         <el-menu-item index="/admin/lottery/prizes">奖品管理</el-menu-item>
         <el-menu-item index="/admin/lottery/records">中奖记录</el-menu-item>
       </el-sub-menu>
+
+      <el-sub-menu index="hiking">
+        <template #title>
+          <el-icon><MapLocation /></el-icon>
+          <span>徒步管理</span>
+        </template>
+        <el-menu-item index="/admin/hiking/routes">路线管理</el-menu-item>
+        <el-menu-item index="/admin/hiking/reviews">评价管理</el-menu-item>
+      </el-sub-menu>
     </el-menu>
   </div>
 </template>
@@ -54,6 +63,7 @@
 <script setup>
 import { computed } from 'vue'
 import { useRoute } from 'vue-router'
+import { MapLocation } from '@element-plus/icons-vue'
 
 const route = useRoute()
 

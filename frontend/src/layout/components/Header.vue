@@ -22,6 +22,10 @@
           <el-icon><Goods /></el-icon>
           <span>{{ $t('nav.products') }}</span>
         </el-menu-item>
+        <el-menu-item index="/hiking">
+          <el-icon><MapLocation /></el-icon>
+          <span>徒步路线</span>
+        </el-menu-item>
       </el-menu>
     </div>
 
@@ -118,7 +122,7 @@ import { useStore } from 'vuex'
 import { useRouter, useRoute } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { ElMessage, ElMessageBox } from 'element-plus'
-import { Present } from '@element-plus/icons-vue'
+import { Present, MapLocation } from '@element-plus/icons-vue'
 import { setLanguage } from '@/locales'
 
 const { t, locale } = useI18n()

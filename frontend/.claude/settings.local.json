@@ -11,7 +11,16 @@
       "Bash(netstat -ano)",
       "Bash(findstr \":8080\\\\|:8081\\\\|:8082\\\\|:8083\\\\|:8084\")",
       "Bash(python -m json.tool)",
-      "Bash(mvn compile:*)"
+      "Bash(mvn compile:*)",
+      "Bash(tasklist)",
+      "Bash(tskill node:*)",
+      "Bash(pkill -f \"node\")",
+      "Bash(killall node:*)",
+      "Read(//tmp/**)",
+      "Bash(ls -la d:/*/)"
+    ],
+    "additionalDirectories": [
+      "C:\\Users\\hspcadmin\\Desktop"
     ]
   }
 }

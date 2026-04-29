@@ -12,6 +12,8 @@ const Cart = () => import('@/views/cart/index.vue')
 const Order = () => import('@/views/order/index.vue')
 const UserCenter = () => import('@/views/user/center.vue')
 const AdminDashboard = () => import('@/views/admin/dashboard.vue')
+const HikingRoutes = () => import('@/views/hiking/index.vue')
+const HikingDetail = () => import('@/views/hiking/detail.vue')
 
 // 路由配置
 const routes = [
@@ -97,6 +99,26 @@ const routes = [
           title: '五一抽奖',
           requiresAuth: true,
           icon: 'Present'
+        }
+      },
+      {
+        path: 'hiking',
+        name: 'HikingRoutes',
+        component: HikingRoutes,
+        meta: {
+          title: '徒步路线',
+          requiresAuth: false,
+          icon: 'MapLocation'
+        }
+      },
+      {
+        path: 'hiking/routes/:id',
+        name: 'HikingDetail',
+        component: HikingDetail,
+        meta: {
+          title: '路线详情',
+          requiresAuth: false,
+          hideInMenu: true
         }
       }
     ]
@@ -215,6 +237,56 @@ const routes = [
             component: () => import('@/views/admin/lottery/records.vue'),
             meta: {
               title: '中奖记录',
+              requiresAdmin: true
+            }
+          }
+        ]
+      },
+      {
+        path: 'hiking',
+        name: 'AdminHiking',
+        redirect: '/admin/hiking/routes',
+        meta: {
+          title: '徒步管理',
+          icon: 'MapLocation',
+          requiresAdmin: true
+        },
+        children: [
+          {
+            path: 'routes',
+            name: 'AdminHikingRoutes',
+            component: () => import('@/views/admin/hiking/routes.vue'),
+            meta: {
+              title: '路线管理',
+              requiresAdmin: true
+            }
+          },
+          {
+            path: 'routes/add',
+            name: 'AdminHikingRouteAdd',
+            component: () => import('@/views/admin/hiking/route-edit.vue'),
+            meta: {
+              title: '新增路线',
+              hideInMenu: true,
+              requiresAdmin: true
+            }
+          },
+          {
+            path: 'routes/edit/:id',
+            name: 'AdminHikingRouteEdit',
+            component: () => import('@/views/admin/hiking/route-edit.vue'),
+            meta: {
+              title: '编辑路线',
+              hideInMenu: true,
+              requiresAdmin: true
+            }
+          },
+          {
+            path: 'reviews',
+            name: 'AdminHikingReviews',
+            component: () => import('@/views/admin/hiking/reviews.vue'),
+            meta: {
+              title: '评价管理',
               requiresAdmin: true
             }
           }
