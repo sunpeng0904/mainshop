@@ -151,6 +151,11 @@ import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { Plus, Search } from '@element-plus/icons-vue'
+import {
+  getAdminHikingRoutes,
+  deleteHikingRoute,
+  toggleRouteStatus
+} from '@/api/hiking'
 
 const router = useRouter()
 
@@ -197,51 +202,23 @@ const statusType = (status) => statusMap[status]?.type || 'info'
 const fetchRoutes = async () => {
   loading.value = true
   try {
-    // 模拟API调用
-    await new Promise(resolve => setTimeout(resolve, 500))
+    const res = await getAdminHikingRoutes({
+      page: page.value,
+      pageSize: pageSize.value,
+      name: filterForm.value.name || undefined,
+      difficulty: filterForm.value.difficulty || undefined,
+      location: filterForm.value.location || undefined,
+      status: filterForm.value.status || undefined
+    })
 
-    const mockData = [
-      {
-        id: 1,
-        name: '香山红叶徒步路线',
-        difficulty: 'easy',
-        location: '北京',
-        distance: 8.5,
-        duration: 3,
-        rating: 4.8,
-        status: 'published',
-        coverImage: 'https://picsum.photos/200/150?random=1',
-        createTime: '2024-01-15 10:30:00'
-      },
-      {
-        id: 2,
-        name: '灵山大峡谷穿越',
-        difficulty: 'hard',
-        location: '北京',
-        distance: 18.2,
-        duration: 8,
-        rating: 4.9,
-        status: 'published',
-        coverImage: 'https://picsum.photos/200/150?random=2',
-        createTime: '2024-01-14 09:15:00'
-      },
-      {
-        id: 3,
-        name: '西湖环湖步道',
-        difficulty: 'easy',
-        location: '杭州',
-        distance: 12.0,
-        duration: 4,
-        rating: 4.7,
-        status: 'draft',
-        coverImage: 'https://picsum.photos/200/150?random=3',
-        createTime: '2024-01-13 14:20:00'
-      }
-    ]
-
-    routeList.value = mockData
-    total.value = 128
+    if (res.code === 200 && res.data) {
+      routeList.value = res.data.records || []
+      total.value = res.data.total || 0
+    } else {
+      ElMessage.error(res.message || '获取路线列表失败')
+    }
   } catch (error) {
+    console.error('获取路线列表失败:', error)
     ElMessage.error('获取路线列表失败')
   } finally {
     loading.value = false
@@ -294,13 +271,18 @@ const goToEdit = (id) => {
 // 切换状态
 const toggleStatus = async (row) => {
   const action = row.status === 'published' ? '下线' : '上线'
+  const newStatus = row.status === 'published' ? 'offline' : 'published'
   try {
     await ElMessageBox.confirm(`确定要${action}该路线吗？`, '提示', {
       type: 'warning'
     })
-    // 调用API
-    row.status = row.status === 'published' ? 'offline' : 'published'
-    ElMessage.success(`${action}成功`)
+    const res = await toggleRouteStatus(row.id, newStatus)
+    if (res.code === 200) {
+      row.status = newStatus
+      ElMessage.success(`${action}成功`)
+    } else {
+      ElMessage.error(res.message || `${action}失败`)
+    }
   } catch (error) {
     // 取消操作
   }
@@ -312,9 +294,13 @@ const handleDelete = async (row) => {
     await ElMessageBox.confirm('确定要删除该路线吗？删除后不可恢复！', '警告', {
       type: 'error'
     })
-    // 调用API
-    ElMessage.success('删除成功')
-    fetchRoutes()
+    const res = await deleteHikingRoute(row.id)
+    if (res.code === 200) {
+      ElMessage.success('删除成功')
+      fetchRoutes()
+    } else {
+      ElMessage.error(res.message || '删除失败')
+    }
   } catch (error) {
     // 取消操作
   }

@@ -688,17 +688,11 @@ const resetTrack = () => {
 // 切换3D视图
 const toggle3DView = (val) => {
   if (mapRef.value) {
-    const map = mapRef.value.getMap()
-    if (map) {
-      map.setViewMode(val ? '3D' : '2D')
-      if (val) {
-        map.setPitch(60)
-      } else {
-        map.setPitch(0)
-      }
+    const success = mapRef.value.toggle3D(val)
+    if (success) {
       ElMessage.success(val ? '已切换到3D视图' : '已切换到2D视图')
     } else {
-      ElMessage.warning('地图未加载完成，无法切换视图')
+      ElMessage.warning('地图未加载完成或当前模式不支持3D视图')
     }
   }
 }

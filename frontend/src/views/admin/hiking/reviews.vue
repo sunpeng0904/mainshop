@@ -257,15 +257,23 @@ import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { Search } from '@element-plus/icons-vue'
+import {
+  getAdminHikingReviews,
+  approveHikingReview,
+  rejectHikingReview,
+  replyHikingReview,
+  deleteHikingReview,
+  getHikingRatingStats
+} from '@/api/hiking'
 
 const router = useRouter()
 
 // 统计数据
 const stats = ref({
-  total: 1286,
-  averageRating: 4.7,
-  pending: 23,
-  today: 18
+  total: 0,
+  averageRating: 0,
+  pending: 0,
+  today: 0
 })
 
 // 筛选表单
@@ -305,95 +313,25 @@ const replyDialog = ref({
 const fetchReviews = async () => {
   loading.value = true
   try {
-    // 模拟API调用
-    await new Promise(resolve => setTimeout(resolve, 500))
+    const params = {
+      page: page.value,
+      pageSize: pageSize.value,
+      status: filterForm.value.status || undefined
+    }
 
-    const mockData = [
-      {
-        id: 1,
-        routeId: 1,
-        routeName: '香山红叶徒步路线',
-        userId: 101,
-        username: '徒步达人小王',
-        userAvatar: 'https://picsum.photos/100/100?random=1',
-        rating: 5,
-        content: '非常棒的路线！红叶季的风景真的太美了，推荐大家一定要去看看。路线难度适中，新手也能完成。',
-        images: [
-          'https://picsum.photos/200/200?random=11',
-          'https://picsum.photos/200/200?random=12'
-        ],
-        status: 'approved',
-        createTime: '2024-10-15 14:30:00',
-        reply: null
-      },
-      {
-        id: 2,
-        routeId: 2,
-        routeName: '灵山大峡谷穿越',
-        userId: 102,
-        username: '户外爱好者',
-        userAvatar: 'https://picsum.photos/100/100?random=2',
-        rating: 4,
-        content: '路线不错，就是周末人太多了。建议工作日去，人少风景好。',
-        images: [],
-        status: 'approved',
-        createTime: '2024-10-14 09:15:00',
-        reply: null
-      },
-      {
-        id: 3,
-        routeId: 1,
-        routeName: '香山红叶徒步路线',
-        userId: 103,
-        username: '亲子游妈妈',
-        userAvatar: 'https://picsum.photos/100/100?random=3',
-        rating: 5,
-        content: '带着孩子一起走的，8岁的孩子也能坚持下来。一路上给孩子讲解植物知识，很有意义的一次徒步。',
-        images: [
-          'https://picsum.photos/200/200?random=13',
-          'https://picsum.photos/200/200?random=14',
-          'https://picsum.photos/200/200?random=15',
-          'https://picsum.photos/200/200?random=16'
-        ],
-        status: 'pending',
-        createTime: '2024-10-13 16:45:00',
-        reply: null
-      },
-      {
-        id: 4,
-        routeId: 3,
-        routeName: '西湖环湖步道',
-        userId: 104,
-        username: '摄影师阿明',
-        userAvatar: 'https://picsum.photos/100/100?random=4',
-        rating: 5,
-        content: '环湖步道风景太棒了，特别是日落时分，非常适合拍照。全程平坦，老人小孩都适合。',
-        images: [
-          'https://picsum.photos/200/200?random=17'
-        ],
-        status: 'pending',
-        createTime: '2024-10-12 18:20:00',
-        reply: null
-      },
-      {
-        id: 5,
-        routeId: 4,
-        routeName: '四姑娘山大峰攀登',
-        userId: 105,
-        username: '登山狂人',
-        userAvatar: 'https://picsum.photos/100/100?random=5',
-        rating: 3,
-        content: '难度比想象中大，新手不要轻易尝试。风景确实美，但是太累了。',
-        images: [],
-        status: 'rejected',
-        createTime: '2024-10-10 11:30:00',
-        reply: null
-      }
-    ]
+    const res = await getAdminHikingReviews(params)
 
-    reviewList.value = mockData
-    total.value = 1286
+    if (res.code === 200 && res.data) {
+      reviewList.value = (res.data.records || []).map(item => ({
+        ...item,
+        images: item.images ? JSON.parse(item.images) : []
+      }))
+      total.value = res.data.total || 0
+    } else {
+      ElMessage.error(res.message || '获取评价列表失败')
+    }
   } catch (error) {
+    console.error('获取评价列表失败:', error)
     ElMessage.error('获取评价列表失败')
   } finally {
     loading.value = false
@@ -441,10 +379,15 @@ const goToRoute = (routeId) => {
 // 通过
 const handleApprove = async (row) => {
   try {
-    // 调用API
-    row.status = 'approved'
-    ElMessage.success('已通过')
+    const res = await approveHikingReview(row.id)
+    if (res.code === 200) {
+      row.status = 'approved'
+      ElMessage.success('已通过')
+    } else {
+      ElMessage.error(res.message || '操作失败')
+    }
   } catch (error) {
+    console.error('审核失败:', error)
     ElMessage.error('操作失败')
   }
 }
@@ -455,9 +398,13 @@ const handleReject = async (row) => {
     await ElMessageBox.confirm('确定要拒绝该评价吗？', '提示', {
       type: 'warning'
     })
-    // 调用API
-    row.status = 'rejected'
-    ElMessage.success('已拒绝')
+    const res = await rejectHikingReview(row.id)
+    if (res.code === 200) {
+      row.status = 'rejected'
+      ElMessage.success('已拒绝')
+    } else {
+      ElMessage.error(res.message || '操作失败')
+    }
   } catch (error) {
     // 取消
   }
@@ -480,11 +427,16 @@ const submitReply = async () => {
   }
 
   try {
-    // 调用API
-    replyDialog.value.review.reply = replyDialog.value.content
-    ElMessage.success('回复成功')
-    replyDialog.value.visible = false
+    const res = await replyHikingReview(replyDialog.value.review.id, replyDialog.value.content)
+    if (res.code === 200) {
+      replyDialog.value.review.reply = replyDialog.value.content
+      ElMessage.success('回复成功')
+      replyDialog.value.visible = false
+    } else {
+      ElMessage.error(res.message || '回复失败')
+    }
   } catch (error) {
+    console.error('回复失败:', error)
     ElMessage.error('回复失败')
   }
 }
@@ -495,9 +447,13 @@ const handleDelete = async (row) => {
     await ElMessageBox.confirm('确定要删除该评价吗？删除后不可恢复！', '警告', {
       type: 'error'
     })
-    // 调用API
-    ElMessage.success('删除成功')
-    fetchReviews()
+    const res = await deleteHikingReview(row.id)
+    if (res.code === 200) {
+      ElMessage.success('删除成功')
+      fetchReviews()
+    } else {
+      ElMessage.error(res.message || '删除失败')
+    }
   } catch (error) {
     // 取消
   }
@@ -508,11 +464,19 @@ const handleBatchApprove = async () => {
   try {
     const count = selectedRows.value.length
     await ElMessageBox.confirm(`确定要通过选中的 ${count} 条评价吗？`, '提示')
-    // 调用API
-    selectedRows.value.forEach(row => {
-      row.status = 'approved'
-    })
-    ElMessage.success(`已通过 ${count} 条评价`)
+    let successCount = 0
+    for (const row of selectedRows.value) {
+      try {
+        const res = await approveHikingReview(row.id)
+        if (res.code === 200) {
+          row.status = 'approved'
+          successCount++
+        }
+      } catch (e) {
+        // 继续处理下一个
+      }
+    }
+    ElMessage.success(`已通过 ${successCount} 条评价`)
     selectedRows.value = []
   } catch (error) {
     // 取消
@@ -526,11 +490,19 @@ const handleBatchReject = async () => {
     await ElMessageBox.confirm(`确定要拒绝选中的 ${count} 条评价吗？`, '警告', {
       type: 'warning'
     })
-    // 调用API
-    selectedRows.value.forEach(row => {
-      row.status = 'rejected'
-    })
-    ElMessage.success(`已拒绝 ${count} 条评价`)
+    let successCount = 0
+    for (const row of selectedRows.value) {
+      try {
+        const res = await rejectHikingReview(row.id)
+        if (res.code === 200) {
+          row.status = 'rejected'
+          successCount++
+        }
+      } catch (e) {
+        // 继续处理下一个
+      }
+    }
+    ElMessage.success(`已拒绝 ${successCount} 条评价`)
     selectedRows.value = []
   } catch (error) {
     // 取消
@@ -544,8 +516,18 @@ const handleBatchDelete = async () => {
     await ElMessageBox.confirm(`确定要删除选中的 ${count} 条评价吗？删除后不可恢复！`, '危险操作', {
       type: 'error'
     })
-    // 调用API
-    ElMessage.success(`已删除 ${count} 条评价`)
+    let successCount = 0
+    for (const row of selectedRows.value) {
+      try {
+        const res = await deleteHikingReview(row.id)
+        if (res.code === 200) {
+          successCount++
+        }
+      } catch (e) {
+        // 继续处理下一个
+      }
+    }
+    ElMessage.success(`已删除 ${successCount} 条评价`)
     selectedRows.value = []
     fetchReviews()
   } catch (error) {

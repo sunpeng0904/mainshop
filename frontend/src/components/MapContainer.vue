@@ -70,6 +70,7 @@ let markerInstances = []
 let movingMarker = null  // 轨迹动画标记
 let placeSearch = null   // 地点搜索实例
 let poiMarkers = []      // POI标记点数组
+let isPlaceholderMode = false  // 是否为占位地图模式
 
 // 初始化地图
 const initMap = async () => {
@@ -115,11 +116,12 @@ const initMap = async () => {
       ]
     })
 
-    // 创建地图实例 - 启用POI显示
+    // 创建地图实例 - 启用POI显示，默认3D模式以支持3D视图
     map = new AMap.Map(mapContainer.value, {
       zoom: props.zoom,
       center: props.center,
-      viewMode: '2D',
+      viewMode: '3D',            // 使用3D模式初始化，才能支持3D视角
+      pitch: 0,                  // 默认俯视角度（2D效果）
       mapStyle: 'amap://styles/normal',
       showLabel: true,           // 显示地图标注
       defaultCursor: 'pointer'   // 鼠标样式
@@ -164,6 +166,7 @@ const initMap = async () => {
 // 渲染占位地图（无Key或加载失败时使用）
 const renderPlaceholderMap = () => {
   if (!mapContainer.value) return
+  isPlaceholderMode = true
 
   const mockPlaces = [
     { name: '游客中心', x: 120, y: 280, type: 'service' },
@@ -653,13 +656,44 @@ const setZoom = (zoom) => {
   if (map) map.setZoom(zoom)
 }
 
+// 切换3D视图
+const toggle3D = (enable3D) => {
+  if (isPlaceholderMode) {
+    console.warn('占位地图模式不支持3D视图')
+    return false
+  }
+
+  if (!map) {
+    console.warn('地图未加载，无法切换3D视图')
+    return false
+  }
+
+  try {
+    // 高德地图 2.0 不支持动态切换 viewMode
+    // 通过调整 pitch（俯仰角）来模拟 2D/3D 效果
+    // pitch 为 0 时是俯视（2D效果），pitch 越大视角越倾斜（3D效果）
+    if (enable3D) {
+      map.setPitch(60)
+      map.setRotation(0)
+    } else {
+      map.setPitch(0)
+      map.setRotation(0)
+    }
+    return true
+  } catch (error) {
+    console.error('切换3D视图失败:', error)
+    return false
+  }
+}
+
 defineExpose({
   getMap,
   getCenter,
   setCenter,
   setZoom,
   playTrackAnimation,
-  stopTrackAnimation
+  stopTrackAnimation,
+  toggle3D
 })
 
 onMounted(() => {

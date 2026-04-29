@@ -344,6 +344,11 @@ import { useRoute, useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
 import { Plus, Delete, ArrowLeft, Edit, Upload } from '@element-plus/icons-vue'
 import MapContainer from '@/components/MapContainer.vue'
+import {
+  getRouteDetail,
+  createHikingRoute,
+  updateHikingRoute
+} from '@/api/hiking'
 
 const route = useRoute()
 const router = useRouter()
@@ -405,50 +410,43 @@ const fetchRouteDetail = async () => {
   if (!isEdit.value) return
 
   try {
-    // 模拟API调用
-    await new Promise(resolve => setTimeout(resolve, 500))
-
-    // 模拟数据
-    form.value = {
-      name: '香山红叶徒步路线',
-      description: '香山红叶徒步路线是北京最经典的秋季徒步路线之一。',
-      difficulty: 'easy',
-      location: '北京',
-      distance: 8.5,
-      duration: 3,
-      elevationGain: 450,
-      maxElevation: 575,
-      bestSeason: '9月-11月',
-      tags: ['风景优美', '红叶观赏'],
-      isHot: true,
-      coverImage: 'https://picsum.photos/400/300?random=1',
-      images: [],
-      track: [],
-      markers: [],
-      itinerary: [
-        {
-          name: '香山公园东门',
-          time: '08:00',
-          distance: 0,
-          elevation: 60,
-          type: 'start',
-          description: '集合出发'
-        }
-      ],
-      equipment: {
-        required: ['登山鞋', '背包'],
-        food: ['饮用水', '能量棒'],
-        safety: ['急救包']
-      },
-      warnings: [
-        {
-          title: '天气注意',
-          type: 'warning',
-          content: '秋季天气多变，请提前查看天气预报'
-        }
-      ]
+    const res = await getRouteDetail(routeId.value)
+    if (res.code === 200 && res.data) {
+      const data = res.data
+      form.value = {
+        name: data.name || '',
+        description: data.description || '',
+        difficulty: data.difficulty || 'easy',
+        location: data.location || '',
+        distance: data.distance || 0,
+        duration: data.duration || 0,
+        elevationGain: data.elevationGain || 0,
+        maxElevation: data.maxElevation || 0,
+        bestSeason: data.bestSeason || '',
+        tags: data.tags ? data.tags.split(',') : [],
+        isHot: data.isHot === 1,
+        coverImage: data.coverImage || '',
+        images: data.images ? JSON.parse(data.images) : [],
+        track: data.trackData ? JSON.parse(data.trackData) : [],
+        markers: [],
+        itinerary: data.itinerary ? JSON.parse(data.itinerary) : [],
+        equipment: data.equipment ? JSON.parse(data.equipment) : {
+          required: [],
+          food: [],
+          safety: []
+        },
+        warnings: data.warnings ? JSON.parse(data.warnings) : []
+      }
+      // 同步图片列表
+      imageList.value = form.value.images.map((url, index) => ({
+        name: `image-${index}`,
+        url
+      }))
+    } else {
+      ElMessage.error(res.message || '获取路线详情失败')
     }
   } catch (error) {
+    console.error('获取路线详情失败:', error)
     ElMessage.error('获取路线详情失败')
   }
 }
@@ -464,12 +462,43 @@ const handleSave = async (status) => {
   if (!valid) return
 
   try {
-    // 调用API保存
-    await new Promise(resolve => setTimeout(resolve, 500))
+    // 准备提交数据
+    const submitData = {
+      name: form.value.name,
+      description: form.value.description,
+      difficulty: form.value.difficulty,
+      location: form.value.location,
+      distance: form.value.distance,
+      duration: form.value.duration,
+      elevationGain: form.value.elevationGain,
+      maxElevation: form.value.maxElevation,
+      bestSeason: form.value.bestSeason,
+      tags: form.value.tags.join(','),
+      isHot: form.value.isHot ? 1 : 0,
+      coverImage: form.value.coverImage,
+      images: JSON.stringify(form.value.images),
+      trackData: JSON.stringify(form.value.track),
+      itinerary: JSON.stringify(form.value.itinerary),
+      equipment: JSON.stringify(form.value.equipment),
+      warnings: JSON.stringify(form.value.warnings),
+      status: status
+    }
 
-    ElMessage.success(status === 'published' ? '发布成功' : '保存草稿成功')
-    router.push('/admin/hiking/routes')
+    let res
+    if (isEdit.value) {
+      res = await updateHikingRoute(routeId.value, submitData)
+    } else {
+      res = await createHikingRoute(submitData)
+    }
+
+    if (res.code === 200) {
+      ElMessage.success(status === 'published' ? '发布成功' : '保存草稿成功')
+      router.push('/admin/hiking/routes')
+    } else {
+      ElMessage.error(res.message || '保存失败')
+    }
   } catch (error) {
+    console.error('保存失败:', error)
     ElMessage.error('保存失败')
   }
 }
