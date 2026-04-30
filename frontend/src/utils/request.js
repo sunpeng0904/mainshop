@@ -1,7 +1,15 @@
 import axios from 'axios'
 import { ElMessage } from 'element-plus'
-import store from '@/store'
 import { getToken } from '@/utils/auth'
+
+// 导入 store 模块（延迟加载避免循环依赖）
+let store = null
+const getStore = () => {
+  if (!store) {
+    store = require('@/store').default
+  }
+  return store
+}
 
 // 创建axios实例
 const service = axios.create({
@@ -56,7 +64,12 @@ service.interceptors.response.use(
     if (res.code === 401) {
       // token过期，直接清除本地状态
       ElMessage.error('登录已过期，请重新登录')
-      store.commit('user/CLEAR_USER')
+      try {
+        const store = getStore()
+        store.commit('user/CLEAR_USER')
+      } catch (e) {
+        // store 可能未初始化，直接清除 localStorage
+      }
       localStorage.removeItem('mall_token')
       window.location.href = '/login'
       return Promise.reject(new Error(res.message || 'Error'))
@@ -81,7 +94,12 @@ service.interceptors.response.use(
           break
         case 401:
           ElMessage.error('未授权，请重新登录')
-          store.commit('user/CLEAR_USER')
+          try {
+            const store = getStore()
+            store.commit('user/CLEAR_USER')
+          } catch (e) {
+            // store 可能未初始化
+          }
           localStorage.removeItem('mall_token')
           window.location.href = '/login'
           break

@@ -17,7 +17,13 @@
       "Bash(cp uploads/cache/huawei1_400x400.jpg src/main/resources/static/images/products/product_2_2.jpg)",
       "Bash(cp uploads/cache/xiaomi0_400x400.jpg src/main/resources/static/images/products/product_3_1.jpg)",
       "Bash(mvn clean:*)",
-      "Bash(taskkill //F //IM java.exe)"
+      "Bash(taskkill //F //IM java.exe)",
+      "Bash(ls -la *.xml *.gradle)",
+      "Bash(tasklist)",
+      "Bash(jps -l)",
+      "Bash(taskkill /F /IM java.exe)",
+      "Bash(taskkill:*)",
+      "Bash(findstr 18788)"
     ]
   }
 }

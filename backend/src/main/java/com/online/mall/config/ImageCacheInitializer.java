@@ -13,7 +13,7 @@ import lombok.extern.slf4j.Slf4j;
  * 应用启动后预缓存图片
  */
 @Slf4j
-@Component
+//@Component
 public class ImageCacheInitializer implements ApplicationRunner {
 
     @Autowired

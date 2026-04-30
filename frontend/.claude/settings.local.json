@@ -17,10 +17,19 @@
       "Bash(pkill -f \"node\")",
       "Bash(killall node:*)",
       "Read(//tmp/**)",
-      "Bash(ls -la d:/*/)"
+      "Bash(ls -la d:/*/)",
+      "Bash(git add:*)",
+      "Bash(git push:*)",
+      "Bash(findstr :18789)",
+      "Bash(findstr :18788)",
+      "Bash(taskkill /F /PID 12140)",
+      "Bash(powershell -Command \"Stop-Process -Id 12140 -Force\")",
+      "Bash(findstr LISTENING)",
+      "Bash(findstr 127.0.0.1)"
     ],
     "additionalDirectories": [
-      "C:\\Users\\hspcadmin\\Desktop"
+      "C:\\Users\\hspcadmin\\Desktop",
+      "d:\\项目\\openclaw\\test\\online-mall\\backend\\backend"
     ]
   }
 }

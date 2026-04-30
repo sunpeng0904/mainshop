@@ -516,11 +516,26 @@ const handleCoverChange = (file) => {
 // 详情图片上传
 const handleImageChange = (file, fileList) => {
   imageList.value = fileList
+  // 同步到 form.images
+  form.value.images = fileList
+    .filter(f => f.status === 'ready' || f.status === 'success')
+    .map(f => f.url || (f.raw && readerResultToUrl(f.raw)))
+    .filter(url => url)
+}
+
+// 将 FileReader 结果转换为 URL
+const readerResultToUrl = (rawFile) => {
+  return URL.createObjectURL(rawFile)
 }
 
 // 详情图片删除
 const handleImageRemove = (file, fileList) => {
   imageList.value = fileList
+  // 同步到 form.images
+  form.value.images = fileList
+    .filter(f => f.status === 'ready' || f.status === 'success')
+    .map(f => f.url || (f.raw && readerResultToUrl(f.raw)))
+    .filter(url => url)
 }
 
 // 添加行程节点

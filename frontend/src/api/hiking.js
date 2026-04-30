@@ -12,11 +12,7 @@ import request from '@/utils/request'
  * @param {string} params.location - 地区
  */
 export const getHikingRoutes = (params = {}) => {
-  return request({
-    url: '/hiking/routes',
-    method: 'get',
-    params
-  })
+  return request.get('/hiking/routes', params)
 }
 
 /**
@@ -24,10 +20,7 @@ export const getHikingRoutes = (params = {}) => {
  * @param {number} id - 路线ID
  */
 export const getRouteDetail = (id) => {
-  return request({
-    url: `/hiking/routes/${id}`,
-    method: 'get'
-  })
+  return request.get(`/hiking/routes/${id}`)
 }
 
 /**
@@ -35,10 +28,7 @@ export const getRouteDetail = (id) => {
  * @param {number} routeId - 路线ID
  */
 export const getRouteTrack = (routeId) => {
-  return request({
-    url: `/hiking/routes/${routeId}/track`,
-    method: 'get'
-  })
+  return request.get(`/hiking/routes/${routeId}/track`)
 }
 
 /**
@@ -46,10 +36,7 @@ export const getRouteTrack = (routeId) => {
  * @param {number} routeId - 路线ID
  */
 export const favoriteRoute = (routeId) => {
-  return request({
-    url: `/hiking/routes/${routeId}/favorite`,
-    method: 'post'
-  })
+  return request.post(`/hiking/routes/${routeId}/favorite`)
 }
 
 /**
@@ -57,10 +44,7 @@ export const favoriteRoute = (routeId) => {
  * @param {number} routeId - 路线ID
  */
 export const unfavoriteRoute = (routeId) => {
-  return request({
-    url: `/hiking/routes/${routeId}/favorite`,
-    method: 'delete'
-  })
+  return request.delete(`/hiking/routes/${routeId}/favorite`)
 }
 
 /**
@@ -69,11 +53,7 @@ export const unfavoriteRoute = (routeId) => {
  * @param {Object} params - 分页参数
  */
 export const getRouteReviews = (routeId, params = {}) => {
-  return request({
-    url: `/hiking/routes/${routeId}/reviews`,
-    method: 'get',
-    params
-  })
+  return request.get(`/hiking/routes/${routeId}/reviews`, params)
 }
 
 /**
@@ -82,21 +62,14 @@ export const getRouteReviews = (routeId, params = {}) => {
  * @param {Object} data - 评价数据
  */
 export const submitReview = (routeId, data) => {
-  return request({
-    url: `/hiking/routes/${routeId}/reviews`,
-    method: 'post',
-    data
-  })
+  return request.post(`/hiking/routes/${routeId}/reviews`, data)
 }
 
 /**
  * 获取用户收藏的路线
  */
 export const getFavoriteRoutes = () => {
-  return request({
-    url: '/hiking/favorites',
-    method: 'get'
-  })
+  return request.get('/hiking/favorites')
 }
 
 // ==================== 后台管理接口 ====================
@@ -106,11 +79,7 @@ export const getFavoriteRoutes = () => {
  * @param {Object} params - 查询参数
  */
 export const getAdminHikingRoutes = (params = {}) => {
-  return request({
-    url: '/admin/hiking/routes',
-    method: 'get',
-    params
-  })
+  return request.get('/admin/hiking/routes', params)
 }
 
 /**
@@ -118,11 +87,7 @@ export const getAdminHikingRoutes = (params = {}) => {
  * @param {Object} data - 路线数据
  */
 export const createHikingRoute = (data) => {
-  return request({
-    url: '/admin/hiking/routes',
-    method: 'post',
-    data
-  })
+  return request.post('/admin/hiking/routes', data)
 }
 
 /**
@@ -131,11 +96,7 @@ export const createHikingRoute = (data) => {
  * @param {Object} data - 路线数据
  */
 export const updateHikingRoute = (id, data) => {
-  return request({
-    url: `/admin/hiking/routes/${id}`,
-    method: 'put',
-    data
-  })
+  return request.put(`/admin/hiking/routes/${id}`, data)
 }
 
 /**
@@ -143,10 +104,7 @@ export const updateHikingRoute = (id, data) => {
  * @param {number} id - 路线ID
  */
 export const deleteHikingRoute = (id) => {
-  return request({
-    url: `/admin/hiking/routes/${id}`,
-    method: 'delete'
-  })
+  return request.delete(`/admin/hiking/routes/${id}`)
 }
 
 /**
@@ -155,11 +113,7 @@ export const deleteHikingRoute = (id) => {
  * @param {string} status - 状态
  */
 export const toggleRouteStatus = (id, status) => {
-  return request({
-    url: `/admin/hiking/routes/${id}/status`,
-    method: 'put',
-    params: { status }
-  })
+  return request.put(`/admin/hiking/routes/${id}/status`, null, { params: { status } })
 }
 
 /**
@@ -167,11 +121,7 @@ export const toggleRouteStatus = (id, status) => {
  * @param {Object} params - 查询参数
  */
 export const getAdminHikingReviews = (params = {}) => {
-  return request({
-    url: '/admin/hiking/reviews',
-    method: 'get',
-    params
-  })
+  return request.get('/admin/hiking/reviews', params)
 }
 
 /**
@@ -179,10 +129,7 @@ export const getAdminHikingReviews = (params = {}) => {
  * @param {number} id - 评价ID
  */
 export const approveHikingReview = (id) => {
-  return request({
-    url: `/admin/hiking/reviews/${id}/approve`,
-    method: 'put'
-  })
+  return request.put(`/admin/hiking/reviews/${id}/approve`)
 }
 
 /**
@@ -190,10 +137,7 @@ export const approveHikingReview = (id) => {
  * @param {number} id - 评价ID
  */
 export const rejectHikingReview = (id) => {
-  return request({
-    url: `/admin/hiking/reviews/${id}/reject`,
-    method: 'put'
-  })
+  return request.put(`/admin/hiking/reviews/${id}/reject`)
 }
 
 /**
@@ -202,11 +146,7 @@ export const rejectHikingReview = (id) => {
  * @param {string} reply - 回复内容
  */
 export const replyHikingReview = (id, reply) => {
-  return request({
-    url: `/admin/hiking/reviews/${id}/reply`,
-    method: 'put',
-    data: { reply }
-  })
+  return request.put(`/admin/hiking/reviews/${id}/reply`, { reply })
 }
 
 /**
@@ -214,10 +154,7 @@ export const replyHikingReview = (id, reply) => {
  * @param {number} id - 评价ID
  */
 export const deleteHikingReview = (id) => {
-  return request({
-    url: `/admin/hiking/reviews/${id}`,
-    method: 'delete'
-  })
+  return request.delete(`/admin/hiking/reviews/${id}`)
 }
 
 /**
@@ -225,8 +162,5 @@ export const deleteHikingReview = (id) => {
  * @param {number} routeId - 路线ID
  */
 export const getHikingRatingStats = (routeId) => {
-  return request({
-    url: `/admin/hiking/routes/${routeId}/rating-stats`,
-    method: 'get'
-  })
+  return request.get(`/admin/hiking/routes/${routeId}/rating-stats`)
 }

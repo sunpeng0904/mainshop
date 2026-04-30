@@ -86,6 +86,10 @@ app:
   image:
     cache-path: ./uploads/cache/
     products-path: ./src/main/resources/static/images/products/
+    # 徒步路线图片配置
+    hiking-path: ./src/main/resources/static/images/hiking/
+    hiking-url: /images/hiking/
+    auto-download: true  # 是否自动下载图片（启动时执行）
   
 # 跨域配置（在代码中通过@CrossOrigin或WebMvcConfigurer配置）
 # cors配置已移除，将在代码中配置

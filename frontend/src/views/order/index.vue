@@ -325,7 +325,7 @@ onMounted(() => {
       font-weight: bold;
       color: #f56c6c;
     }
-  }
+  } 
 
   .order-actions {
     display: flex;
