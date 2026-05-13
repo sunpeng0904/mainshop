@@ -5,13 +5,15 @@ import createPersistedState from 'vuex-persistedstate'
 import user from './modules/user'
 import cart from './modules/cart'
 import product from './modules/product'
+import share from './modules/share'
 
 // 创建Store实例
 const store = createStore({
   modules: {
     user,
     cart,
-    product
+    product,
+    share
   },
   
   // 状态持久化

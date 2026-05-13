@@ -14,6 +14,11 @@ const UserCenter = () => import('@/views/user/center.vue')
 const AdminDashboard = () => import('@/views/admin/dashboard.vue')
 const HikingRoutes = () => import('@/views/hiking/index.vue')
 const HikingDetail = () => import('@/views/hiking/detail.vue')
+const ShareIndex = () => import('@/views/share/index.vue')
+const ShareDetail = () => import('@/views/share/detail.vue')
+const ShareFavorites = () => import('@/views/share/favorites.vue')
+const ShareNotifications = () => import('@/views/share/notifications.vue')
+const ShareCircle = () => import('@/views/share/circle.vue')
 
 // 路由配置
 const routes = [
@@ -118,6 +123,56 @@ const routes = [
         meta: {
           title: '路线详情',
           requiresAuth: false,
+          hideInMenu: true
+        }
+      },
+      {
+        path: 'share',
+        name: 'ShareIndex',
+        component: ShareIndex,
+        meta: {
+          title: '朋友圈',
+          requiresAuth: true,
+          icon: 'ChatDotRound'
+        }
+      },
+      {
+        path: 'share/:id',
+        name: 'ShareDetail',
+        component: ShareDetail,
+        meta: {
+          title: '分享详情',
+          requiresAuth: true,
+          hideInMenu: true
+        }
+      },
+      {
+        path: 'share/favorites',
+        name: 'ShareFavorites',
+        component: ShareFavorites,
+        meta: {
+          title: '我的收藏',
+          requiresAuth: true,
+          hideInMenu: true
+        }
+      },
+      {
+        path: 'share/notifications',
+        name: 'ShareNotifications',
+        component: ShareNotifications,
+        meta: {
+          title: '消息通知',
+          requiresAuth: true,
+          hideInMenu: true
+        }
+      },
+      {
+        path: 'share/circle/:userId',
+        name: 'ShareCircle',
+        component: ShareCircle,
+        meta: {
+          title: '用户圈子',
+          requiresAuth: true,
           hideInMenu: true
         }
       }

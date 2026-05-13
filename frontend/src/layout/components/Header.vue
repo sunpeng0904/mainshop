@@ -26,6 +26,10 @@
           <el-icon><MapLocation /></el-icon>
           <span>徒步路线</span>
         </el-menu-item>
+        <el-menu-item index="/share">
+          <el-icon><ChatDotRound /></el-icon>
+          <span>朋友圈</span>
+        </el-menu-item>
       </el-menu>
     </div>
 
@@ -61,6 +65,13 @@
           </el-dropdown-menu>
         </template>
       </el-dropdown>
+
+      <!-- 消息通知 -->
+      <el-badge v-if="isLogin" :value="shareUnreadCount" :hidden="shareUnreadCount === 0" class="cart-badge">
+        <el-button text @click="$router.push('/share/notifications')">
+          <el-icon :size="20"><Bell /></el-icon>
+        </el-button>
+      </el-badge>
 
       <!-- 购物车 -->
       <el-badge :value="cartCount" :hidden="cartCount === 0" class="cart-badge">
@@ -117,7 +128,7 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { useStore } from 'vuex'
 import { useRouter, useRoute } from 'vue-router'
 import { useI18n } from 'vue-i18n'
@@ -142,6 +153,7 @@ const currentLangLabel = computed(() => {
 const activeMenu = computed(() => {
   const path = route.path
   if (path.startsWith('/product')) return '/products'
+  if (path.startsWith('/share')) return '/share'
   return path
 })
 
@@ -157,10 +169,20 @@ const isAdmin = computed(() => store.getters['user/isAdmin'])
 // 购物车数量
 const cartCount = computed(() => store.state.cart?.cartCount || 0)
 
+// 分享未读通知数
+const shareUnreadCount = computed(() => store.getters['share/totalUnreadCount'])
+
 // 菜单选择
 const handleMenuSelect = (index) => {
   router.push(index)
 }
+
+// 获取未读通知数
+onMounted(() => {
+  if (isLogin.value) {
+    store.dispatch('share/fetchUnreadCount')
+  }
+})
 
 // 搜索
 const handleSearch = () => {

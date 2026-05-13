@@ -78,6 +78,9 @@ public class SecurityConfig {
                 .antMatchers("/order/**").authenticated()
                 .antMatchers("/payment/**").authenticated()
                 .antMatchers("/address/**").authenticated()
+                .antMatchers("/share/**").authenticated()
+                .antMatchers("/friend/**").authenticated()
+                .antMatchers("/notification/**").authenticated()
 
                 // 管理员接口
                 .antMatchers("/admin/**").hasRole("ADMIN")
