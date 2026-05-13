@@ -25,7 +25,8 @@
       "Bash(taskkill /F /PID 12140)",
       "Bash(powershell -Command \"Stop-Process -Id 12140 -Force\")",
       "Bash(findstr LISTENING)",
-      "Bash(findstr 127.0.0.1)"
+      "Bash(findstr 127.0.0.1)",
+      "Bash(git commit:*)"
     ],
     "additionalDirectories": [
       "C:\\Users\\hspcadmin\\Desktop",

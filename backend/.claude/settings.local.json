@@ -23,7 +23,13 @@
       "Bash(jps -l)",
       "Bash(taskkill /F /IM java.exe)",
       "Bash(taskkill:*)",
-      "Bash(findstr 18788)"
+      "Bash(findstr 18788)",
+      "Bash(mvn spring-boot:run)",
+      "Bash(awk '{print $5}')",
+      "Read(//d/项目/openclaw/test/**)",
+      "Read(//d/项目/openclaw/**)",
+      "Bash(openspec status *)",
+      "Bash(openspec instructions *)"
     ]
   }
 }
