@@ -65,3 +65,26 @@ class TestProjectManagerAgent:
         result = reviewer.review(agent_output)
         assert result.score >= 80
         assert result.status == "pass"
+
+
+from agents.requirement.agent import RequirementAgent
+from agents.requirement.reviewer import RequirementReviewer
+
+
+class TestRequirementAgent:
+    def test_analyze_requirements(self):
+        agent = RequirementAgent({"name": "Requirement"})
+        result = agent.execute({"user_needs": "User management system"})
+        assert "requirements_spec" in result["deliverables"]
+        assert "functional_requirements" in result["deliverables"]
+
+    def test_review_requirements(self):
+        reviewer = RequirementReviewer({"name": "ReqReviewer"})
+        agent_output = {
+            "deliverables": {
+                "requirements_spec": {"version": "1.0", "sections": ["overview", "functional"]},
+                "functional_requirements": [{"id": "FR-001", "description": "User login"}]
+            }
+        }
+        result = reviewer.review(agent_output)
+        assert result.score >= 80
