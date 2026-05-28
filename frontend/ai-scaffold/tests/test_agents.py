@@ -41,3 +41,27 @@ class TestReviewAgent:
         result = reviewer.review(agent_output)
         assert result.score == 0
         assert result.status == "fail"
+
+
+from agents.project_manager.agent import ProjectManagerAgent
+from agents.project_manager.reviewer import ProjectManagerReviewer
+
+
+class TestProjectManagerAgent:
+    def test_create_project_plan(self):
+        agent = ProjectManagerAgent({"name": "ProjectManager"})
+        result = agent.execute({"requirements": "Build e-commerce platform"})
+        assert "project_plan" in result["deliverables"]
+        assert "milestones" in result["deliverables"]
+
+    def test_review_project_plan(self):
+        reviewer = ProjectManagerReviewer({"name": "PMReviewer"})
+        agent_output = {
+            "deliverables": {
+                "project_plan": {"phases": ["design", "develop", "test"]},
+                "milestones": ["Phase 1 complete"]
+            }
+        }
+        result = reviewer.review(agent_output)
+        assert result.score >= 80
+        assert result.status == "pass"
