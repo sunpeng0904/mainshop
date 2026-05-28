@@ -47,3 +47,49 @@ class TestScoreManager:
         assert result.score == 85
         assert result.status == "pass"
         assert result.comments == ["Good code quality"]
+
+
+from core.orchestrator import Orchestrator
+
+
+class TestOrchestrator:
+    def test_run_workflow_success(self):
+        config = {
+            "stages": ["project_manager", "requirement", "design"],
+            "agents": {
+                "project_manager": {"name": "ProjectManager"},
+                "requirement": {"name": "Requirement"},
+                "design": {"name": "Design"}
+            }
+        }
+        orchestrator = Orchestrator(config)
+        result = orchestrator.run_workflow()
+        assert result is True
+
+    def test_get_stage_status(self):
+        config = {
+            "stages": ["project_manager", "requirement"],
+            "agents": {
+                "project_manager": {"name": "ProjectManager"},
+                "requirement": {"name": "Requirement"}
+            }
+        }
+        orchestrator = Orchestrator(config)
+        orchestrator.run_workflow()
+        status = orchestrator.get_stage_status("project_manager")
+        assert status["completed"] is True
+
+    def test_get_all_status(self):
+        config = {
+            "stages": ["project_manager", "requirement"],
+            "agents": {
+                "project_manager": {"name": "ProjectManager"},
+                "requirement": {"name": "Requirement"}
+            }
+        }
+        orchestrator = Orchestrator(config)
+        orchestrator.run_workflow()
+        all_status = orchestrator.get_all_status()
+        assert len(all_status) == 2
+        assert "project_manager" in all_status
+        assert "requirement" in all_status
