@@ -18,6 +18,29 @@ class TestScoreManager:
         result = sm.calculate_status(50)
         assert result == "fail"
 
+    def test_calculate_score_boundary_pass(self):
+        sm = ScoreManager()
+        assert sm.calculate_status(80) == "pass"
+
+    def test_calculate_score_boundary_conditional(self):
+        sm = ScoreManager()
+        assert sm.calculate_status(79) == "conditional"
+        assert sm.calculate_status(60) == "conditional"
+
+    def test_calculate_score_boundary_fail(self):
+        sm = ScoreManager()
+        assert sm.calculate_status(59) == "fail"
+
+    def test_calculate_score_invalid_negative(self):
+        sm = ScoreManager()
+        with pytest.raises(ValueError):
+            sm.calculate_status(-1)
+
+    def test_calculate_score_invalid_above_100(self):
+        sm = ScoreManager()
+        with pytest.raises(ValueError):
+            sm.calculate_status(101)
+
     def test_create_review_result(self):
         sm = ScoreManager()
         result = sm.create_review_result(85, ["Good code quality"])
