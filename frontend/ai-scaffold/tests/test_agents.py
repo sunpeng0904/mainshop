@@ -83,7 +83,8 @@ class TestRequirementAgent:
         agent_output = {
             "deliverables": {
                 "requirements_spec": {"version": "1.0", "sections": ["overview", "functional"]},
-                "functional_requirements": [{"id": "FR-001", "description": "User login"}]
+                "functional_requirements": [{"id": "FR-001", "description": "User login"}],
+                "non_functional_requirements": [{"id": "NFR-001", "description": "Performance"}]
             }
         }
         result = reviewer.review(agent_output)

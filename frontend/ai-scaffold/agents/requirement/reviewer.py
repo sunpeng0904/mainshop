@@ -8,9 +8,9 @@ class RequirementReviewer(ReviewAgent):
         score = 0
 
         if "requirements_spec" in deliverables:
-            score += 35
+            score += 30
         if "functional_requirements" in deliverables:
-            score += 50
+            score += 40
         if "non_functional_requirements" in deliverables:
             score += 30
 
@@ -19,6 +19,9 @@ class RequirementReviewer(ReviewAgent):
     def _generate_comments(self, agent_output: Dict[str, Any]) -> List[str]:
         comments = []
         deliverables = agent_output.get("deliverables", {})
+
+        if "requirements_spec" in deliverables:
+            comments.append("Requirements specification created")
 
         if "functional_requirements" in deliverables:
             req_count = len(deliverables["functional_requirements"])
