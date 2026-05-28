@@ -67,6 +67,29 @@ class TestProjectManagerAgent:
         assert result.status == "pass"
 
 
+from agents.design.agent import DesignAgent
+from agents.design.reviewer import DesignReviewer
+
+
+class TestDesignAgent:
+    def test_create_design_document(self):
+        agent = DesignAgent({"name": "Design"})
+        result = agent.execute({"requirements": "E-commerce platform"})
+        assert "design_document" in result["deliverables"]
+        assert "architecture" in result["deliverables"]
+
+    def test_review_design(self):
+        reviewer = DesignReviewer({"name": "DesignReviewer"})
+        agent_output = {
+            "deliverables": {
+                "design_document": {"version": "1.0", "layers": ["controller", "service", "mapper"]},
+                "architecture": {"type": "layered", "components": ["frontend", "backend", "database"]}
+            }
+        }
+        result = reviewer.review(agent_output)
+        assert result.score >= 80
+
+
 from agents.requirement.agent import RequirementAgent
 from agents.requirement.reviewer import RequirementReviewer
 
