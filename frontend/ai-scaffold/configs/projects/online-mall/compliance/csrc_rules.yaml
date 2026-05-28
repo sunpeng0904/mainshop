@@ -1,0 +1,45 @@
+csrc_compliance:
+  version: "1.0"
+  effective_date: "2026-01-01"
+
+  code_comment_standards:
+    - rule: "All public methods must have Javadoc comments"
+      severity: "high"
+    - rule: "All complex logic must have inline comments"
+      severity: "medium"
+    - rule: "No TODO or FIXME comments in production code"
+      severity: "high"
+
+  annotation_standards:
+    - rule: "Use @RestController for REST controllers"
+      severity: "high"
+    - rule: "Use @Service for service layer classes"
+      severity: "high"
+    - rule: "Use @Transactional for database transactions"
+      severity: "medium"
+
+  log_standards:
+    - rule: "Log all API requests and responses"
+      severity: "medium"
+    - rule: "Log all exceptions with stack trace"
+      severity: "high"
+    - rule: "Use structured logging format"
+      severity: "medium"
+
+  exception_handling:
+    - rule: "All exceptions must be caught and handled"
+      severity: "high"
+    - rule: "Use global exception handler"
+      severity: "high"
+    - rule: "Return meaningful error messages"
+      severity: "medium"
+
+  security_standards:
+    - rule: "Use HTTPS for all communications"
+      severity: "high"
+    - rule: "Validate all user inputs"
+      severity: "high"
+    - rule: "Use parameterized queries to prevent SQL injection"
+      severity: "high"
+    - rule: "Implement proper authentication and authorization"
+      severity: "high"

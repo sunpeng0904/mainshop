@@ -1,0 +1,36 @@
+agents:
+  project_manager:
+    name: ProjectManager
+    skills: ["project_planning", "resource_management"]
+    review_required: true
+
+  requirement:
+    name: Requirement
+    skills: ["requirements_analysis", "documentation"]
+    review_required: true
+
+  design:
+    name: Design
+    skills: ["architecture_design", "compliance_checking"]
+    review_required: true
+    compliance_rules:
+      - csrc_comment_standards
+      - csrc_annotation_standards
+
+  development:
+    name: Development
+    skills: ["code_generation", "code_review"]
+    review_required: true
+    compliance_rules:
+      - csrc_code_standards
+      - csrc_log_standards
+
+  testing:
+    name: Testing
+    skills: ["test_planning", "test_execution"]
+    review_required: true
+
+  deployment:
+    name: Deployment
+    skills: ["deployment_management", "rollback_planning"]
+    review_required: true

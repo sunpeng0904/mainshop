@@ -1,0 +1,38 @@
+project:
+  name: online-mall
+  description: E-commerce platform for online shopping
+  version: 1.0.0
+
+architecture:
+  type: layered
+  layers:
+    - controller
+    - service
+    - mapper
+    - entity
+
+technology_stack:
+  backend:
+    framework: Spring Boot
+    orm: MyBatis
+    language: Java
+  frontend:
+    framework: Vue.js
+    ui_library: Element Plus
+    language: TypeScript
+  database:
+    type: MySQL
+    version: 8.0
+
+dictionary_items:
+  - name: product_category
+    values: ["electronics", "clothing", "food", "books"]
+  - name: order_status
+    values: ["pending", "paid", "shipped", "delivered", "cancelled"]
+  - name: payment_method
+    values: ["wechat_pay", "alipay", "credit_card"]
+
+permission_control:
+  model: RBAC
+  roles: ["admin", "user", "guest"]
+  permissions: ["user:read", "user:write", "order:read", "order:write"]

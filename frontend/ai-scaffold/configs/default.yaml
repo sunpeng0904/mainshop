@@ -1,0 +1,19 @@
+framework:
+  name: AI Scaffold Framework
+  version: "1.0.0"
+
+orchestrator:
+  auto_confirm: false
+  require_human_review: true
+  score_threshold:
+    pass: 80
+    conditional: 60
+    fail: 0
+
+logging:
+  level: INFO
+  format: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+
+output:
+  directory: "./output"
+  format: "json"

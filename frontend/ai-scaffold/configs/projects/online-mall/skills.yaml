@@ -1,0 +1,34 @@
+skills:
+  base_skills:
+    - name: code_generator
+      enabled: true
+    - name: doc_generator
+      enabled: true
+    - name: code_reviewer
+      enabled: true
+    - name: test_generator
+      enabled: true
+
+  compliance:
+    - name: term_definition
+      enabled: true
+    - name: standard_checker
+      enabled: true
+    - name: compliance_report
+      enabled: true
+
+  security:
+    - name: vulnerability_scanner
+      enabled: true
+    - name: permission_handler
+      enabled: true
+    - name: encryption
+      enabled: true
+
+  performance:
+    - name: performance_tester
+      enabled: true
+    - name: code_optimizer
+      enabled: true
+    - name: resource_monitor
+      enabled: true
