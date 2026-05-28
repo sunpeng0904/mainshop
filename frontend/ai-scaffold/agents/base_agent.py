@@ -1,5 +1,6 @@
 from typing import Dict, Any, List
 from dataclasses import dataclass
+from core.score_manager import ScoreManager
 
 
 @dataclass
@@ -32,10 +33,14 @@ class BaseAgent:
 
 
 class ReviewAgent(BaseAgent):
+    def __init__(self, config: Dict[str, Any]):
+        super().__init__(config)
+        self.score_manager = ScoreManager()
+
     def review(self, agent_output: Dict[str, Any]) -> ReviewResult:
         score = self._calculate_score(agent_output)
         comments = self._generate_comments(agent_output)
-        status = self._determine_status(score)
+        status = self.score_manager.calculate_status(score)
         return ReviewResult(score=score, status=status, comments=comments)
 
     def _calculate_score(self, agent_output: Dict[str, Any]) -> int:
@@ -46,11 +51,3 @@ class ReviewAgent(BaseAgent):
 
     def _generate_comments(self, agent_output: Dict[str, Any]) -> List[str]:
         return ["Review completed"]
-
-    def _determine_status(self, score: int) -> str:
-        if score >= 80:
-            return "pass"
-        elif score >= 60:
-            return "conditional"
-        else:
-            return "fail"

@@ -1,5 +1,7 @@
 import pytest
-from core.score_manager import ScoreManager, ReviewResult
+from core.score_manager import ScoreManager
+from agents.base_agent import ReviewResult
+from core.orchestrator import Orchestrator
 
 
 class TestScoreManager:
@@ -49,9 +51,6 @@ class TestScoreManager:
         assert result.comments == ["Good code quality"]
 
 
-from core.orchestrator import Orchestrator
-
-
 class TestOrchestrator:
     def test_run_workflow_success(self):
         config = {
@@ -65,6 +64,12 @@ class TestOrchestrator:
         orchestrator = Orchestrator(config)
         result = orchestrator.run_workflow()
         assert result is True
+        # Verify all stages ran
+        all_status = orchestrator.get_all_status()
+        assert len(all_status) == 3
+        assert "project_manager" in all_status
+        assert "requirement" in all_status
+        assert "design" in all_status
 
     def test_get_stage_status(self):
         config = {
@@ -78,6 +83,19 @@ class TestOrchestrator:
         orchestrator.run_workflow()
         status = orchestrator.get_stage_status("project_manager")
         assert status["completed"] is True
+        assert "score" in status
+        assert "status" in status
+        assert status["score"] == 80
+        assert status["status"] == "pass"
+
+    def test_get_stage_status_nonexistent(self):
+        config = {
+            "stages": ["project_manager"],
+            "agents": {"project_manager": {"name": "ProjectManager"}}
+        }
+        orchestrator = Orchestrator(config)
+        status = orchestrator.get_stage_status("nonexistent")
+        assert status == {"completed": False}
 
     def test_get_all_status(self):
         config = {
@@ -93,3 +111,10 @@ class TestOrchestrator:
         assert len(all_status) == 2
         assert "project_manager" in all_status
         assert "requirement" in all_status
+
+    def test_run_workflow_empty_stages(self):
+        config = {"stages": [], "agents": {}}
+        orchestrator = Orchestrator(config)
+        result = orchestrator.run_workflow()
+        assert result is True
+        assert orchestrator.get_all_status() == {}

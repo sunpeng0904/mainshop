@@ -1,15 +1,7 @@
-from dataclasses import dataclass
 from typing import List
 
 PASS_THRESHOLD = 80
 CONDITIONAL_THRESHOLD = 60
-
-
-@dataclass
-class ReviewResult:
-    score: int
-    status: str
-    comments: List[str]
 
 
 class ScoreManager:
@@ -23,6 +15,7 @@ class ScoreManager:
         else:
             return "fail"
 
-    def create_review_result(self, score: int, comments: List[str]) -> ReviewResult:
+    def create_review_result(self, score: int, comments: List[str]):
+        from agents.base_agent import ReviewResult
         status = self.calculate_status(score)
         return ReviewResult(score=score, status=status, comments=comments)
