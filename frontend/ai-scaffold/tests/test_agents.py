@@ -158,3 +158,26 @@ class TestTestingAgent:
         }
         result = reviewer.review(agent_output)
         assert result.score >= 80
+
+
+from agents.deployment.agent import DeploymentAgent
+from agents.deployment.reviewer import DeploymentReviewer
+
+
+class TestDeploymentAgent:
+    def test_deploy(self):
+        agent = DeploymentAgent({"name": "Deployment"})
+        result = agent.execute({"code": "tested_code", "tests_passed": True})
+        assert "deployment_record" in result["deliverables"]
+        assert "rollback_plan" in result["deliverables"]
+
+    def test_review_deployment(self):
+        reviewer = DeploymentReviewer({"name": "DeployReviewer"})
+        agent_output = {
+            "deliverables": {
+                "deployment_record": {"status": "success", "environment": "production"},
+                "rollback_plan": {"steps": ["stop_service", "restore_backup", "restart"]}
+            }
+        }
+        result = reviewer.review(agent_output)
+        assert result.score >= 80
