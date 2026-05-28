@@ -112,3 +112,49 @@ class TestRequirementAgent:
         }
         result = reviewer.review(agent_output)
         assert result.score >= 80
+
+
+from agents.development.agent import DevelopmentAgent
+from agents.development.reviewer import DevelopmentReviewer
+
+
+class TestDevelopmentAgent:
+    def test_generate_code(self):
+        agent = DevelopmentAgent({"name": "Development"})
+        result = agent.execute({"design": "Controller-Service-Mapper pattern"})
+        assert "code" in result["deliverables"]
+        assert "tests" in result["deliverables"]
+
+    def test_review_code(self):
+        reviewer = DevelopmentReviewer({"name": "DevReviewer"})
+        agent_output = {
+            "deliverables": {
+                "code": {"files": ["UserController.java", "UserService.java"], "compliance": {"compliant": True}},
+                "tests": {"files": ["UserControllerTest.java"], "coverage": "85%"}
+            }
+        }
+        result = reviewer.review(agent_output)
+        assert result.score >= 80
+
+
+from agents.testing.agent import TestingAgent
+from agents.testing.reviewer import TestingReviewer
+
+
+class TestTestingAgent:
+    def test_execute_tests(self):
+        agent = TestingAgent({"name": "Testing"})
+        result = agent.execute({"code": "UserController.java"})
+        assert "test_report" in result["deliverables"]
+        assert "coverage_report" in result["deliverables"]
+
+    def test_review_tests(self):
+        reviewer = TestingReviewer({"name": "TestReviewer"})
+        agent_output = {
+            "deliverables": {
+                "test_report": {"total": 100, "passed": 95, "failed": 5},
+                "coverage_report": {"line_coverage": "85%", "branch_coverage": "80%"}
+            }
+        }
+        result = reviewer.review(agent_output)
+        assert result.score >= 80
