@@ -9,7 +9,7 @@ setup(
     ],
     entry_points={
         "console_scripts": [
-            "scaffold=ai_scaffold.scaffold:main",
+            "scaffold=scaffold:main",
         ],
     },
     author="AI Scaffold Team",
