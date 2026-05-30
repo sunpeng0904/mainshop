@@ -8,6 +8,23 @@ import * as ElementPlusIconsVue from '@element-plus/icons-vue'
 import '@/styles/index.scss'
 import i18n from './locales'
 
+// 图片懒加载指令
+const lazyLoad = {
+  mounted(el, binding) {
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          const img = el
+          img.src = binding.value
+          img.classList.add('loaded')
+          observer.unobserve(el)
+        }
+      })
+    }, { threshold: 0.1 })
+    observer.observe(el)
+  }
+}
+
 // 抑制 ResizeObserver 循环错误（Element Plus 常见问题，无害）
 const debounce = (fn, delay) => {
   let timer = null
@@ -27,6 +44,9 @@ window.ResizeObserver = class ResizeObserver extends _ResizeObserver {
 
 // 创建Vue实例
 const app = createApp(App)
+
+// 注册懒加载指令
+app.directive('lazy', lazyLoad)
 
 // 注册Element Plus图标
 for (const [key, component] of Object.entries(ElementPlusIconsVue)) {

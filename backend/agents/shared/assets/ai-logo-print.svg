@@ -1,0 +1,86 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 200" width="400" height="200">
+  <defs>
+    <style>
+      text { font-family: 'Microsoft YaHei', 'PingFang SC', 'STKaiti', sans-serif; }
+    </style>
+  </defs>
+
+  <!-- Background (white for print) -->
+  <rect width="400" height="200" rx="12" fill="#ffffff"/>
+  <rect x="2" y="2" width="396" height="196" rx="10" fill="none" stroke="#333333" stroke-width="1.5"/>
+
+  <!-- AI Brain Icon -->
+  <g transform="translate(50, 45)">
+    <!-- Brain outline -->
+    <path d="M35 10 C15 10, 0 25, 0 45 C0 55, 5 65, 15 70 C10 75, 10 85, 20 90 C25 95, 35 95, 40 90 C45 95, 55 95, 60 90 C70 85, 70 75, 65 70 C75 65, 80 55, 80 45 C80 25, 65 10, 45 10 Z"
+          fill="none" stroke="#333333" stroke-width="2"/>
+
+    <!-- Neural nodes -->
+    <circle cx="25" cy="35" r="4" fill="#333333"/>
+    <circle cx="55" cy="35" r="4" fill="#333333"/>
+    <circle cx="20" cy="55" r="4" fill="#333333"/>
+    <circle cx="60" cy="55" r="4" fill="#333333"/>
+    <circle cx="35" cy="45" r="5" fill="#333333"/>
+    <circle cx="45" cy="65" r="4" fill="#333333"/>
+    <circle cx="30" cy="75" r="3" fill="#333333"/>
+
+    <!-- Connection lines -->
+    <line x1="25" y1="35" x2="35" y2="45" stroke="#555555" stroke-width="1.5"/>
+    <line x1="55" y1="35" x2="35" y2="45" stroke="#555555" stroke-width="1.5"/>
+    <line x1="35" y1="45" x2="20" y2="55" stroke="#555555" stroke-width="1.5"/>
+    <line x1="35" y1="45" x2="60" y2="55" stroke="#555555" stroke-width="1.5"/>
+    <line x1="35" y1="45" x2="45" y2="65" stroke="#555555" stroke-width="1.5"/>
+    <line x1="45" y1="65" x2="30" y2="75" stroke="#555555" stroke-width="1.5"/>
+    <line x1="20" y1="55" x2="30" y2="75" stroke="#777777" stroke-width="1"/>
+    <line x1="60" y1="55" x2="45" y2="65" stroke="#777777" stroke-width="1"/>
+  </g>
+
+  <!-- Integration nodes -->
+  <g transform="translate(240, 50)">
+    <circle cx="50" cy="40" r="8" fill="#333333"/>
+    <circle cx="20" cy="20" r="5" fill="#555555"/>
+    <circle cx="80" cy="20" r="5" fill="#555555"/>
+    <circle cx="20" cy="60" r="5" fill="#555555"/>
+    <circle cx="80" cy="60" r="5" fill="#555555"/>
+    <circle cx="50" cy="10" r="4" fill="#666666"/>
+    <circle cx="50" cy="70" r="4" fill="#666666"/>
+
+    <line x1="50" y1="40" x2="20" y2="20" stroke="#555555" stroke-width="1.5"/>
+    <line x1="50" y1="40" x2="80" y2="20" stroke="#555555" stroke-width="1.5"/>
+    <line x1="50" y1="40" x2="20" y2="60" stroke="#555555" stroke-width="1.5"/>
+    <line x1="50" y1="40" x2="80" y2="60" stroke="#555555" stroke-width="1.5"/>
+    <line x1="50" y1="40" x2="50" y2="10" stroke="#777777" stroke-width="1"/>
+    <line x1="50" y1="40" x2="50" y2="70" stroke="#777777" stroke-width="1"/>
+
+    <circle cx="50" cy="40" r="35" fill="none" stroke="#999999" stroke-width="1" stroke-dasharray="4,4"/>
+  </g>
+
+  <!-- Connecting bridge -->
+  <g>
+    <line x1="130" y1="85" x2="240" y2="70" stroke="#888888" stroke-width="1" stroke-dasharray="6,3"/>
+    <line x1="130" y1="95" x2="240" y2="90" stroke="#888888" stroke-width="1" stroke-dasharray="6,3"/>
+  </g>
+
+  <!-- Title -->
+  <text x="200" y="155" text-anchor="middle" font-size="28" font-weight="bold" fill="#1a1a1a">
+    AI一体化
+  </text>
+
+  <!-- Subtitle -->
+  <text x="200" y="175" text-anchor="middle" font-size="11" fill="#555555" letter-spacing="4">
+    智能体开发平台
+  </text>
+
+  <!-- Signature -->
+  <g transform="translate(320, 165)">
+    <rect x="0" y="0" width="60" height="25" rx="3" fill="none" stroke="#333333" stroke-width="1"/>
+    <text x="30" y="17" text-anchor="middle" font-size="13" fill="#1a1a1a">
+      孙朋
+    </text>
+  </g>
+
+  <!-- Version -->
+  <text x="15" y="190" font-family="monospace" font-size="8" fill="#999999">
+    v1.0.0
+  </text>
+</svg>

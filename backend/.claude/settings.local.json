@@ -29,7 +29,20 @@
       "Read(//d/项目/openclaw/test/**)",
       "Read(//d/项目/openclaw/**)",
       "Bash(openspec status *)",
-      "Bash(openspec instructions *)"
+      "Bash(openspec instructions *)",
+      "Bash(sort -t'|' -k1 -n)",
+      "Bash(python3 -c ' *)",
+      "Bash(npx playwright *)",
+      "Bash(node *)",
+      "Bash(npm root *)",
+      "Bash(npm install *)",
+      "Bash(iconv -f GBK -t UTF-8)",
+      "Bash(xxd \"D:/项目/openclaw/test/online-mall/backend/backend/agents/design/rules/ATTRC2E.txt\")",
+      "Bash(xxd)",
+      "Bash(mvn test *)",
+      "Bash(npm test *)",
+      "Bash(java -jar target/*.jar)",
+      "Bash(npm run *)"
     ]
   }
 }

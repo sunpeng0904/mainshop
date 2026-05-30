@@ -19,6 +19,8 @@ const ShareDetail = () => import('@/views/share/detail.vue')
 const ShareFavorites = () => import('@/views/share/favorites.vue')
 const ShareNotifications = () => import('@/views/share/notifications.vue')
 const ShareCircle = () => import('@/views/share/circle.vue')
+const InsiderList = () => import('@/views/insider/InsiderList.vue')
+const JdHome = () => import('@/views/jd-home/index.vue')
 
 // 路由配置
 const routes = [
@@ -44,6 +46,16 @@ const routes = [
           title: '首页',
           requiresAuth: false,
           icon: 'House'
+        }
+      },
+      {
+        path: 'jd-home',
+        name: 'JdHome',
+        component: JdHome,
+        meta: {
+          title: '京东首页',
+          requiresAuth: false,
+          icon: 'ShoppingCart'
         }
       },
       {
@@ -346,6 +358,16 @@ const routes = [
             }
           }
         ]
+      },
+      {
+        path: 'insider',
+        name: 'AdminInsider',
+        component: InsiderList,
+        meta: {
+          title: '内幕信息知情人登记',
+          icon: 'Document',
+          requiresAdmin: true
+        }
       }
     ]
   },

@@ -3,6 +3,28 @@ project:
   description: E-commerce platform for online shopping
   version: 1.0.0
 
+stages:
+  - project_manager
+  - requirement
+  - design
+  - development
+  - testing
+  - deployment
+
+agents:
+  project_manager:
+    name: ProjectManager
+  requirement:
+    name: Requirement
+  design:
+    name: Design
+  development:
+    name: Development
+  testing:
+    name: Testing
+  deployment:
+    name: Deployment
+
 architecture:
   type: layered
   layers:

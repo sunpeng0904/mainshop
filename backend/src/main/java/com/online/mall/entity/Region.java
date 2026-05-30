@@ -6,60 +6,77 @@ import lombok.Data;
 import java.time.LocalDateTime;
 
 /**
- * 区域实体（省市区）
+ * 区域实体（符合ATTRC2E词根规范）
  */
 @Data
-@TableName("sys_region")
+@TableName("region_tb")
 public class Region {
 
-    @TableId(type = IdType.AUTO)
-    private Long id;
+    /**
+     * 主键标识
+     */
+    @TableId(type = IdType.ASSIGN_UUID)
+    private String id;
 
     /**
-     * 区域编码（国标行政区划代码）
+     * 区域编码
      */
-    private String regionCode;
+    private String cde;
 
     /**
      * 区域名称
      */
-    private String regionName;
+    private String name;
 
     /**
      * 父级编码
      */
-    private String parentCode;
+    private String prntCde;
 
     /**
-     * 层级: 1-省 2-市 3-区
+     * 级别 1-省 2-市 3-区
      */
-    private Integer level;
+    private Integer lvl;
 
     /**
-     * 排序
+     * 创建人标识
      */
-    private Integer sort;
+    @TableField(fill = FieldFill.INSERT)
+    private String entrPsnId;
 
     /**
-     * 状态 0-禁用 1-启用
+     * 创建人姓名
      */
-    private Integer status;
+    @TableField(fill = FieldFill.INSERT)
+    private String entrPsnName;
 
     /**
      * 创建时间
      */
     @TableField(fill = FieldFill.INSERT)
-    private LocalDateTime createTime;
+    private LocalDateTime entrTime;
 
     /**
-     * 更新时间
+     * 最后修改人标识
      */
     @TableField(fill = FieldFill.INSERT_UPDATE)
-    private LocalDateTime updateTime;
+    private String lastAlterPsnId;
 
     /**
-     * 删除标志 0-未删除 1-已删除
+     * 最后修改人姓名
+     */
+    @TableField(fill = FieldFill.INSERT_UPDATE)
+    private String lastAlterPsnName;
+
+    /**
+     * 最后修改时间
+     */
+    @TableField(fill = FieldFill.INSERT_UPDATE)
+    private LocalDateTime lastAlterTime;
+
+    /**
+     * 删除标志 Y-是 N-否
      */
     @TableLogic
-    private Integer deleted;
+    private String vldStsCde;
 }

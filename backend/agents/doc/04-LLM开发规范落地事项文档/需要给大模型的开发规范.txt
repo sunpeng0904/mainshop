@@ -1,0 +1,45 @@
+10.4Dao层和Mapping文件 6
+1.架构原因同一个service只能用一个Mapper，所以多表关联类的查询目前需要放到自动生成的Mpper类中，这个需要注意别覆盖了开发人员扩展的方法。
+2.不能修改架构自动生成的原生的mapping文件以及DO、DTO对象，否则新建数据库属性重新生成实体类会产生冲突。
+3.扩展类的Mapping文件放在ext文件夹中以Ext结尾。
+4.Mapping方法中标注清楚功能用途。
+5.扩展对象都放在dao层的dataobject包下的ext包下自建属于自己模块的业务包。
+6.扩展对象dao、service、controller层公用无需转换，但是要保证前端和后端都不需要的属性不要暴露给前端。
+
+
+10.7字典项的处理
+10.7.1列表查询
+10.7.1.1非关联性字典转换：
+列表中的字典项，后端对象新建相应的name属性，调用
+ IDictCommonService.findValidDictMapByKey(String dictLargClas)个方法返回map再根据map.get(key)获取的value值进行赋值转化处理。
+10.7.1.2关联性字典转换：
+iDictCommonService.findValidCascadeDictListByKey(String dictLargClas);
+
+
+
+10.8获取当前用户信息
+import org.csits.platform.common.context.UserInfoHolder;
+UserInfoHolder.getCurrentUser()；
+
+
+10.9对象使用逻辑  4
+10.9.1列表查询列表返回：ListQO ListPageVO ListVO
+ScrtTestBscListQO  列表查询对象
+ScrtTestBscListPageVO  列表分页返回
+ScrtTestBscListVO  列表非分页返回
+10.9.2详情查询返回的是数量(统计类）：countQO  countVO
+ScrtTestDfctCountQO  请求对象
+ScrtTestDfctCountVO  返回对象
+10.9.3详情查询详情（非统计类） DetailQO   DetailVO  DbExtVO
+10.9.3.1查询、删除的请求对象
+ScrtTestBscDetailQO   DetailQO 
+10.9.3.2增、改的请求以及返回对象
+3.2.1非直接数据库对象的扩展对象
+ScrtTestBscDetailVO  （ 最大对象 以及二级大对象 等  非直接数据库对象的扩展对象 ）  DetailVO 
+ScrtTestBscDetailVO与ScrtTestBscInfoDetailVO  ：  ScrtTestBscDetailVO.ScrtTestBscInfoDetailVO
+3.2.2直接数据库对象的扩展
+ScrtTestBscInfoDbExtVO（  大对象包含的  直接数据库对象的扩展）  DbExtVO 
+ScrtTestBscInfoDetailVO.ScrtTestBscInfoDbExtVO
+10.9.4逻辑控制对象  ConfExtVO
+ScrtTestBscInfoConfExtVO
+

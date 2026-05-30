@@ -12,6 +12,8 @@
   "dependencies": {
     "@amap/amap-jsapi-loader": "^1.0.1",
     "@element-plus/icons-vue": "^2.3.0",
+    "@tsparticles/slim": "^4.1.0",
+    "@tsparticles/vue3": "^4.1.0",
     "axios": "^1.6.0",
     "dayjs": "^1.11.0",
     "echarts": "^5.4.0",

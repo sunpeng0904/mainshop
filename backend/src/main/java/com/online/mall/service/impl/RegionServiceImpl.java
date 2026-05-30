@@ -16,7 +16,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * 区域服务实现
+ * 区域服务实现（符合ATTRC2E词根规范）
  */
 @Slf4j
 @Service
@@ -25,9 +25,8 @@ public class RegionServiceImpl extends ServiceImpl<RegionMapper, Region> impleme
     @Override
     public List<RegionVO> getProvinces() {
         List<Region> regions = list(new QueryWrapper<Region>()
-                .eq("level", 1)
-                .eq("status", 1)
-                .orderByAsc("sort"));
+                .eq("lvl", 1)
+                .eq("vld_sts_cde", "N"));
 
         return convertToVOList(regions);
     }
@@ -35,10 +34,9 @@ public class RegionServiceImpl extends ServiceImpl<RegionMapper, Region> impleme
     @Override
     public List<RegionVO> getCitiesByProvinceCode(String provinceCode) {
         List<Region> regions = list(new QueryWrapper<Region>()
-                .eq("parent_code", provinceCode)
-                .eq("level", 2)
-                .eq("status", 1)
-                .orderByAsc("sort"));
+                .eq("prnt_cde", provinceCode)
+                .eq("lvl", 2)
+                .eq("vld_sts_cde", "N"));
 
         return convertToVOList(regions);
     }
@@ -46,10 +44,9 @@ public class RegionServiceImpl extends ServiceImpl<RegionMapper, Region> impleme
     @Override
     public List<RegionVO> getDistrictsByCityCode(String cityCode) {
         List<Region> regions = list(new QueryWrapper<Region>()
-                .eq("parent_code", cityCode)
-                .eq("level", 3)
-                .eq("status", 1)
-                .orderByAsc("sort"));
+                .eq("prnt_cde", cityCode)
+                .eq("lvl", 3)
+                .eq("vld_sts_cde", "N"));
 
         return convertToVOList(regions);
     }
@@ -60,9 +57,9 @@ public class RegionServiceImpl extends ServiceImpl<RegionMapper, Region> impleme
             return null;
         }
         Region region = getOne(new QueryWrapper<Region>()
-                .eq("region_code", regionCode)
-                .eq("status", 1));
-        return region != null ? region.getRegionName() : null;
+                .eq("cde", regionCode)
+                .eq("vld_sts_cde", "N"));
+        return region != null ? region.getName() : null;
     }
 
     @Override
@@ -73,11 +70,11 @@ public class RegionServiceImpl extends ServiceImpl<RegionMapper, Region> impleme
         }
 
         List<Region> regions = list(new QueryWrapper<Region>()
-                .in("region_code", regionCodes)
-                .eq("status", 1));
+                .in("cde", regionCodes)
+                .eq("vld_sts_cde", "N"));
 
         for (Region region : regions) {
-            result.put(region.getRegionCode(), region.getRegionName());
+            result.put(region.getCde(), region.getName());
         }
         return result;
     }

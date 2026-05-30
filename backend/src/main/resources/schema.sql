@@ -130,3 +130,51 @@ CREATE TABLE IF NOT EXISTS order_item (
     INDEX idx_order (order_id),
     INDEX idx_product (product_id)
 );
+
+-- 用户地址表（符合ATTRC2E词根规范）
+CREATE TABLE IF NOT EXISTS user_addr_tb (
+    id VARCHAR(32) NOT NULL,
+    user_id VARCHAR(32) NULL COMMENT '用户标识',
+    rcvr_name VARCHAR(100) NULL COMMENT '收货人姓名',
+    rcvr_tel VARCHAR(20) NULL COMMENT '收货人电话',
+    prvc_cde VARCHAR(10) NULL COMMENT '省份编码',
+    city_cde VARCHAR(10) NULL COMMENT '城市编码',
+    dstrct_cde VARCHAR(10) NULL COMMENT '区县编码',
+    dtl_addr VARCHAR(500) NULL COMMENT '详细地址',
+    dft_indc CHAR(1) DEFAULT 'N' NULL COMMENT '是否默认标志 Y-是 N-否',
+    entr_psn_id VARCHAR(32) NULL COMMENT '创建人标识',
+    entr_psn_name VARCHAR(100) NULL COMMENT '创建人姓名',
+    entr_time TIMESTAMP NULL COMMENT '创建时间',
+    last_alter_psn_id VARCHAR(32) NULL COMMENT '最后修改人标识',
+    last_alter_psn_name VARCHAR(100) NULL COMMENT '最后修改人姓名',
+    last_alter_time TIMESTAMP NULL COMMENT '最后修改时间',
+    vld_sts_cde CHAR(1) DEFAULT 'N' NULL COMMENT '删除标志 Y-是 N-否',
+    PRIMARY KEY (id),
+    INDEX idx_user_addr_user_id (user_id),
+    INDEX idx_user_addr_user_id_dft (user_id, dft_indc, entr_time)
+);
+
+-- 内幕信息知情人登记表
+CREATE TABLE IF NOT EXISTS t_insider_info (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    company_name VARCHAR(200) NOT NULL,
+    accept_time DATE,
+    board VARCHAR(50),
+    financing_type VARCHAR(100),
+    industry VARCHAR(100),
+    knowledge_time DATE,
+    reason VARCHAR(500),
+    content VARCHAR(1000),
+    insider_name VARCHAR(50),
+    register_time DATE,
+    status VARCHAR(30) DEFAULT 'draft',
+    create_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    update_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    deleted INT DEFAULT 0,
+    INDEX idx_company_name (company_name),
+    INDEX idx_insider_name (insider_name),
+    INDEX idx_status (status),
+    INDEX idx_accept_time (accept_time),
+    INDEX idx_knowledge_time (knowledge_time),
+    INDEX idx_register_time (register_time)
+);

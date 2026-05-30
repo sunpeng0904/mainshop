@@ -1,0 +1,18 @@
+{
+  "scripts": {
+    "test": "npx playwright test",
+    "test:address": "npx playwright test tests/address.spec.js",
+    "test:security": "npx playwright test tests/security.spec.js",
+    "test:health": "npx playwright test tests/health.spec.js",
+    "test:report": "npx playwright show-report",
+    "test:debug": "npx playwright test --debug",
+    "build": "mvn clean package -DskipTests",
+    "start": "mvn spring-boot:run"
+  },
+  "dependencies": {
+    "playwright": "^1.60.0"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.60.0"
+  }
+}

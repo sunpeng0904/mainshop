@@ -6,51 +6,51 @@ import lombok.Data;
 import java.time.LocalDateTime;
 
 /**
- * 地址视图对象
+ * 地址视图对象（符合ATTRC2E词根规范）
  */
 @Data
 @Schema(description = "地址信息")
 public class AddressVO {
 
-    @Schema(description = "地址ID")
-    private Long id;
+    @Schema(description = "地址标识")
+    private String id;
 
     @Schema(description = "收货人姓名")
-    private String receiverName;
+    private String rcvrName;
 
     @Schema(description = "收货人电话")
-    private String receiverPhone;
+    private String rcvrTel;
 
     @Schema(description = "省份编码")
-    private String provinceCode;
+    private String prvcCde;
 
     @Schema(description = "省份名称")
-    private String provinceName;
+    private String prvcName;
 
     @Schema(description = "城市编码")
-    private String cityCode;
+    private String cityCde;
 
     @Schema(description = "城市名称")
     private String cityName;
 
     @Schema(description = "区县编码")
-    private String districtCode;
+    private String dstrctCde;
 
     @Schema(description = "区县名称")
-    private String districtName;
+    private String dstrctName;
 
     @Schema(description = "详细地址")
-    private String detailAddress;
+    private String dtlAddr;
 
     @Schema(description = "完整地址")
-    private String fullAddress;
+    private String fullAddr;
 
-    @Schema(description = "是否默认地址 0-否 1-是")
-    private Integer isDefault;
+    @Schema(description = "是否默认标志 Y-是 N-否")
+    private String dftIndc;
 
     @Schema(description = "创建时间")
-    private LocalDateTime createTime;
+    private LocalDateTime entrTime;
 
-    @Schema(description = "更新时间")
-    private LocalDateTime updateTime;
+    @Schema(description = "最后修改时间")
+    private LocalDateTime lastAlterTime;
 }

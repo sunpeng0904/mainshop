@@ -10,10 +10,10 @@ import com.online.mall.service.ImageCacheService;
 import lombok.extern.slf4j.Slf4j;
 
 /**
- * 应用启动后预缓存图片
+ * 应用启动后预缓存图片"请用 Playwright 打开 https://www.baidu.com，在搜索框输入『Playwright MCP』，点击百度一下，然后截图给我。"
  */
 @Slf4j
-//@Component
+//@Componentclc
 public class ImageCacheInitializer implements ApplicationRunner {
 
     @Autowired
