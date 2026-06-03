@@ -3,7 +3,7 @@ import pymysql
 conn = pymysql.connect(host='127.0.0.1', port=3306, user='root', password='root', database='online_mall', charset='utf8mb4')
 cursor = conn.cursor()
 
-sql = "INSERT INTO region_tb (id, cde, name, prnt_cde, lvl, vld_sts_cde) VALUES (%s, %s, %s, %s, %s, '0') ON DUPLICATE KEY UPDATE name = VALUES(name)"
+sql = "INSERT INTO region_tb (id, cde, name, prnt_cde, lvl, vld_sts_cde) VALUES (%s, %s, %s, %s, %s, 'N') ON DUPLICATE KEY UPDATE name = VALUES(name)"
 
 districts = [
     # Beijing (110000) - direct under province

@@ -97,6 +97,6 @@ public class UserAddr {
     /**
      * 删除标志 Y-是 N-否
      */
-    @TableLogic
+    @TableLogic(delval = "Y", value = "N")
     private String vldStsCde;
 }

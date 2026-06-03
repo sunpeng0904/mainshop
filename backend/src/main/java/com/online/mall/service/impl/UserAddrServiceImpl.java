@@ -191,9 +191,13 @@ public class UserAddrServiceImpl extends ServiceImpl<UserAddrMapper, UserAddr> i
      * 验证地址DTO
      */
     private void validateAddressDTO(AddressDTO addressDTO) {
-        // 验证手机号格式
-        if (addressDTO.getRcvrTel() != null && !addressDTO.getRcvrTel().matches("^1[3-9]\\d{9}$")) {
-            throw new BusinessException("address.invalid.phone");
+        // 去除手机号中的空格后再验证
+        if (addressDTO.getRcvrTel() != null) {
+            String tel = addressDTO.getRcvrTel().replaceAll("\\s", "");
+            if (!tel.matches("^\\d{11}$")) {
+                throw new BusinessException("address.invalid.phone");
+            }
+            addressDTO.setRcvrTel(tel);
         }
 
         // 验证收货人姓名长度

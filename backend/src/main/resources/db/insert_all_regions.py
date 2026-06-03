@@ -50,7 +50,7 @@ cities_data = [
     ('C1509', '150900', 'Ulanqab', '150000', 2),
 ]
 
-sql = "INSERT INTO region_tb (id, cde, name, prnt_cde, lvl, vld_sts_cde) VALUES (%s, %s, %s, %s, %s, '0') ON DUPLICATE KEY UPDATE name = VALUES(name)"
+sql = "INSERT INTO region_tb (id, cde, name, prnt_cde, lvl, vld_sts_cde) VALUES (%s, %s, %s, %s, %s, 'N') ON DUPLICATE KEY UPDATE name = VALUES(name)"
 
 # Insert with actual Chinese names
 import json

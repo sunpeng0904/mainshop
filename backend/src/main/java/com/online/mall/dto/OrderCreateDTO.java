@@ -19,9 +19,9 @@ public class OrderCreateDTO {
     @Schema(description = "购物车商品ID列表", required = true)
     private List<Long> cartIds;
 
-    @NotNull(message = "{javax.validation.constraints.NotNull.message}")
-    @Schema(description = "收货地址ID", required = true, example = "1")
-    private Long addressId;
+    @NotBlank(message = "{javax.validation.constraints.NotBlank.message}")
+    @Schema(description = "收货地址ID", required = true, example = "c20cb8b7988cc783d5a0a18b74ad3d9a")
+    private String addressId;
 
     @Schema(description = "订单备注")
     private String remark;

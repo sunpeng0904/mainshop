@@ -165,12 +165,26 @@ class UserAddrServiceImplTest {
     @DisplayName("添加地址 - 手机号验证失败")
     void testAddAddr_InvalidPhone() {
         // Given
-        testAddrDTO.setRcvrTel("12345678901");
+        testAddrDTO.setRcvrTel("1234567890"); // 10位，不满足11位验证
 
         // When & Then
         assertThrows(BusinessException.class, () -> {
             addrService.addAddr("user-001", testAddrDTO);
         });
+    }
+
+    @Test
+    @DisplayName("添加地址 - 手机号带空格应自动去除")
+    void testAddAddr_PhoneWithSpaces() {
+        // Given
+        testAddrDTO.setRcvrTel("138 0013 8000");
+
+        // When
+        AddressVO result = addrService.addAddr("user-001", testAddrDTO);
+
+        // Then
+        assertNotNull(result);
+        assertEquals("13800138000", testAddrDTO.getRcvrTel()); // 空格已去除
     }
 
     @Test
