@@ -191,7 +191,7 @@ import { ChatDotRound, Wallet } from '@element-plus/icons-vue'
 import { getAddressList, getDefaultAddress } from '@/api/address'
 import { createOrder } from '@/api/order'
 import { getImageUrl } from '@/utils/image'
-import PayDialog from '@/components/PayDialog.vue'
+import PayDialog from '@/components/pay-dialog.vue'
 
 const store = useStore()
 const router = useRouter()

@@ -114,7 +114,7 @@ import { useRouter } from 'vue-router'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { getOrderList, cancelOrder, confirmOrder, deleteOrder, getOrderStatusMap } from '@/api/order'
 import { getImageUrl } from '@/utils/image'
-import PayDialog from '@/components/PayDialog.vue'
+import PayDialog from '@/components/pay-dialog.vue'
 
 const router = useRouter()
 

@@ -104,7 +104,7 @@ import { useRoute, useRouter } from 'vue-router'
 import { useStore } from 'vuex'
 import { useI18n } from 'vue-i18n'
 import { getProductList } from '@/api/product'
-import ProductCard from '@/components/ProductCard.vue'
+import ProductCard from '@/components/product-card.vue'
 
 const { t } = useI18n()
 const route = useRoute()

@@ -61,6 +61,7 @@ public class SecurityConfig {
                     "/user/health",
                     "/product/**",
                     "/category/**",
+                    "/region/**",
                     "/images/**",
                     "/uploads/**",
                     "/hiking/**",

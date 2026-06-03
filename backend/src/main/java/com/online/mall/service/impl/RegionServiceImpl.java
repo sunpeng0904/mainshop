@@ -25,8 +25,7 @@ public class RegionServiceImpl extends ServiceImpl<RegionMapper, Region> impleme
     @Override
     public List<RegionVO> getProvinces() {
         List<Region> regions = list(new QueryWrapper<Region>()
-                .eq("lvl", 1)
-                .eq("vld_sts_cde", "N"));
+                .eq("lvl", 1));
 
         return convertToVOList(regions);
     }
@@ -35,8 +34,7 @@ public class RegionServiceImpl extends ServiceImpl<RegionMapper, Region> impleme
     public List<RegionVO> getCitiesByProvinceCode(String provinceCode) {
         List<Region> regions = list(new QueryWrapper<Region>()
                 .eq("prnt_cde", provinceCode)
-                .eq("lvl", 2)
-                .eq("vld_sts_cde", "N"));
+                .eq("lvl", 2));
 
         return convertToVOList(regions);
     }
@@ -45,8 +43,7 @@ public class RegionServiceImpl extends ServiceImpl<RegionMapper, Region> impleme
     public List<RegionVO> getDistrictsByCityCode(String cityCode) {
         List<Region> regions = list(new QueryWrapper<Region>()
                 .eq("prnt_cde", cityCode)
-                .eq("lvl", 3)
-                .eq("vld_sts_cde", "N"));
+                .eq("lvl", 3));
 
         return convertToVOList(regions);
     }
@@ -57,8 +54,7 @@ public class RegionServiceImpl extends ServiceImpl<RegionMapper, Region> impleme
             return null;
         }
         Region region = getOne(new QueryWrapper<Region>()
-                .eq("cde", regionCode)
-                .eq("vld_sts_cde", "N"));
+                .eq("cde", regionCode));
         return region != null ? region.getName() : null;
     }
 
@@ -70,8 +66,7 @@ public class RegionServiceImpl extends ServiceImpl<RegionMapper, Region> impleme
         }
 
         List<Region> regions = list(new QueryWrapper<Region>()
-                .in("cde", regionCodes)
-                .eq("vld_sts_cde", "N"));
+                .in("cde", regionCodes));
 
         for (Region region : regions) {
             result.put(region.getCde(), region.getName());

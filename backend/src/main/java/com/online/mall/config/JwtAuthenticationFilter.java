@@ -121,6 +121,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                path.startsWith("/user/password/reset") ||
                path.startsWith("/product/") ||
                path.startsWith("/category/") ||
+               path.startsWith("/region/") ||
                path.startsWith("/images/") ||
                path.startsWith("/uploads/") ||
                path.startsWith("/api-docs") ||

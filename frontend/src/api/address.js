@@ -66,3 +66,26 @@ export function setDefaultAddress(addressId) {
 export function getDefaultAddress() {
   return request.get('/address/default')
 }
+
+/**
+ * 获取省份列表
+ */
+export function getProvinces() {
+  return request.get('/region/provinces')
+}
+
+/**
+ * 获取城市列表
+ * @param {string} provinceCode - 省份编码
+ */
+export function getCities(provinceCode) {
+  return request.get(`/region/cities/${provinceCode}`)
+}
+
+/**
+ * 获取区县列表
+ * @param {string} cityCode - 城市编码
+ */
+export function getDistricts(cityCode) {
+  return request.get(`/region/districts/${cityCode}`)
+}

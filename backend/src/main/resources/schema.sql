@@ -178,3 +178,22 @@ CREATE TABLE IF NOT EXISTS t_insider_info (
     INDEX idx_knowledge_time (knowledge_time),
     INDEX idx_register_time (register_time)
 );
+
+-- 区域表（省市区，符合ATTRC2E词根规范）
+CREATE TABLE IF NOT EXISTS region_tb (
+    id VARCHAR(36) NOT NULL PRIMARY KEY COMMENT '主键标识',
+    cde VARCHAR(10) NOT NULL COMMENT '区域编码(国标码)',
+    name VARCHAR(50) NOT NULL COMMENT '区域名称',
+    prnt_cde VARCHAR(10) COMMENT '父级编码',
+    lvl INT NOT NULL COMMENT '层级: 1-省 2-市 3-区',
+    entr_psn_id VARCHAR(36) COMMENT '创建人标识',
+    entr_psn_name VARCHAR(50) COMMENT '创建人姓名',
+    entr_time DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+    last_alter_psn_id VARCHAR(36) COMMENT '最后修改人标识',
+    last_alter_psn_name VARCHAR(50) COMMENT '最后修改人姓名',
+    last_alter_time DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '最后修改时间',
+    vld_sts_cde CHAR(1) DEFAULT 'N' COMMENT '有效标志 Y-删除 N-有效',
+    UNIQUE KEY uk_cde (cde),
+    KEY idx_prnt_cde (prnt_cde),
+    KEY idx_lvl (lvl)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='区域表';

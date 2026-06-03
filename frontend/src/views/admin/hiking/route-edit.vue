@@ -343,7 +343,7 @@ import { ref, computed, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
 import { Plus, Delete, ArrowLeft, Edit, Upload } from '@element-plus/icons-vue'
-import MapContainer from '@/components/MapContainer.vue'
+import MapContainer from '@/components/map-container.vue'
 import {
   getRouteDetail,
   createHikingRoute,

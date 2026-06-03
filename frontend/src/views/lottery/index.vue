@@ -162,7 +162,7 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { ElMessage } from 'element-plus'
-import LotteryWheel from '@/components/LotteryWheel.vue'
+import LotteryWheel from '@/components/lottery-wheel.vue'
 import { getRemainingTimes, getMyRecords, receivePrize } from '@/api/lottery'
 
 const wheelRef = ref(null)

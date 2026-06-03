@@ -44,7 +44,7 @@
 import { ref, onMounted } from 'vue'
 import { ElMessage } from 'element-plus'
 import { getMyCollects } from '@/api/share'
-import ShareCard from '@/components/ShareCard.vue'
+import ShareCard from '@/components/share-card.vue'
 
 const collectList = ref([])
 const loading = ref(false)

@@ -122,8 +122,8 @@ import { ref, computed, onMounted } from 'vue'
 import { useStore } from 'vuex'
 import { ElMessage } from 'element-plus'
 import { getFriendShares, getHotShares } from '@/api/share'
-import ShareCard from '@/components/ShareCard.vue'
-import SharePublishDialog from '@/components/SharePublishDialog.vue'
+import ShareCard from '@/components/share-card.vue'
+import SharePublishDialog from '@/components/share-publish-dialog.vue'
 
 const store = useStore()
 

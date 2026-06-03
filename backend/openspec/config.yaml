@@ -1,20 +1,147 @@
 schema: spec-driven
 
-# Project context (optional)
-# This is shown to AI when creating artifacts.
-# Add your tech stack, conventions, style guides, domain knowledge, etc.
-# Example:
-#   context: |
-#     Tech stack: TypeScript, React, Node.js
-#     We use conventional commits
-#     Domain: e-commerce platform
+# Project context
+context: |
+  Tech stack: Java, Spring Boot, MyBatis-Plus, KingbaseV8R3, Vue 3, Element Plus
+  Architecture: DDD分层架构（表现层/应用层/领域层/基础设施层）
+  Naming: 词根字典驱动，表名后缀（_tb/_rcod/_cfg/_dtl），字段名全大写蛇形
+  Standards: 阿里巴巴Java开发手册，SDD规范（HLD/LLD/DBD/IFD四层体系）
+  Domain: 在线商城系统（online-mall）
 
-# Per-artifact rules (optional)
-# Add custom rules for specific artifacts.
-# Example:
-#   rules:
-#     proposal:
-#       - Keep proposals under 500 words
-#       - Always include a "Non-goals" section
-#     tasks:
-#       - Break tasks into chunks of max 2 hours
+# Per-artifact rules
+rules:
+  proposal:
+    - 必须包含 ## Why 章节，说明业务价值和动机
+    - 必须包含 ## What Changes 章节，列出具体变更点
+    - 必须包含 ## Capabilities 章节，区分新增和修改的能力
+    - 必须包含 ## Impact 章节，说明影响范围（前端/后端/数据库/依赖）
+    - 变更描述必须可追溯到需求池中的需求编号
+
+  design:
+    # ===== 阿里SDD规范约束 =====
+    # 概要设计(HLD)约束
+    - design.md 作为概要设计说明书(HLD)，必须包含以下章节：
+      ## Context（系统上下文）、## Goals / Non-Goals（设计目标）、
+      ## Decisions（架构决策）、## Risks / Trade-offs（风险与权衡）
+    - ## Context 必须说明：技术栈现状、架构现状、约束条件
+    - ## Decisions 每条决策必须包含：决策内容、选择理由(Why)、备选方案(Alternatives considered)
+    - ## Risks / Trade-offs 必须识别至少2个风险并给出缓解措施
+    # 模块设计约束
+    - 必须明确模块划分，每个模块需说明职责、对外接口、依赖关系
+    - 模块设计必须映射到需求规格说明书(SRS)中的功能模块
+    # 数据设计约束
+    - 必须说明数据模型概览和核心实体关系
+    - 涉及数据库变更时必须说明表结构变更、索引策略
+    # 接口设计约束
+    - 必须说明外部接口和内部接口的概览
+    - 涉及API变更时必须说明URL、方法、请求/响应格式
+    # 非功能设计约束
+    - 必须覆盖安全设计（认证、授权、加密方案）
+    - 必须覆盖性能设计（缓存、并发、数据库优化方案）
+    - 必须覆盖高可用设计（容灾、故障转移、降级策略）
+    # 追溯约束
+    - 每个设计决策必须可追溯到 proposal.md 中的变更点
+    - 涉及数据库变更时，字段命名必须符合词根字典规范（全大写蛇形命名）
+
+  specs:
+    - 每个 capability 的 spec.md 必须使用 SHALL 语义定义需求
+    - 每个需求必须包含至少一个 Scenario（WHEN/THEN 格式）
+    - spec 必须可追溯到 proposal.md 中声明的 capability
+    - 涉及接口的 spec 必须定义请求/响应格式和错误码
+
+  tasks:
+    - 任务必须按阶段分组（如：1.基础层 2.领域层 3.应用层 4.表现层）
+    - 每个任务必须是可独立执行的原子操作
+    - 涉及数据库的任务必须包含DDL语句或迁移脚本
+    - 涉及接口的任务必须包含请求/响应定义
+    - 任务粒度控制在单人2小时内可完成
+    - 任务必须标注关联的 spec 需求编号
+
+# ===== 全局产物保留规则 =====
+# 任何新增需求或修改需求，必须在 docs/<需求目录名>/ 下保留完整生命周期产物
+# 目录命名：kebab-case，与 openspec/changes/ 中的变更名保持一致
+# 产物编号规范：两位数字前缀 + 阶段名称，按时间顺序编号
+artifact_preservation:
+  enabled: true
+  base_dir: docs
+  rule: |
+    项目只要存在新增需求或修改需求，整个项目周期都必须默认保留产物。
+    每个需求/变更在 docs/ 下创建独立目录，目录名使用 kebab-case。
+    产物按生命周期阶段编号，确保可追溯、可审计。
+  lifecycle_artifacts:
+    - id: "01"
+      stage: "项目管理"
+      artifact: "project-charter.md"
+      description: "项目章程"
+      required: true
+    - id: "02"
+      stage: "需求"
+      artifact: "requirement-spec.md"
+      description: "需求规格说明书"
+      required: true
+    - id: "02"
+      stage: "需求"
+      artifact: "requirement-review.md"
+      description: "需求审核报告"
+      required: true
+    - id: "03"
+      stage: "设计"
+      artifact: "design-spec.md"
+      description: "设计文档(HLD/LLD)"
+      required: true
+    - id: "03"
+      stage: "设计"
+      artifact: "design-review.md"
+      description: "设计审核报告"
+      required: true
+    - id: "04"
+      stage: "开发"
+      artifact: "development-review.md"
+      description: "开发审核报告"
+      required: true
+    - id: "05"
+      stage: "测试"
+      artifact: "test-report.md"
+      description: "测试报告"
+      required: true
+    - id: "06"
+      stage: "部署"
+      artifact: "deployment-report.md"
+      description: "部署报告"
+      required: true
+    - id: "07"
+      stage: "收尾"
+      artifact: "project-completion.md"
+      description: "项目总结报告"
+      required: true
+  optional_artifacts:
+    - artifact: "requirement-pool.md"
+      description: "需求池"
+      stage: "需求"
+    - artifact: "requirement-analysis.md"
+      description: "需求分析报告"
+      stage: "需求"
+    - artifact: "use-case.md"
+      description: "用例文档"
+      stage: "需求"
+    - artifact: "sdd-specification.md"
+      description: "SDD编写规范约束"
+      stage: "需求"
+    - artifact: "architecture-design.md"
+      description: "架构设计文档"
+      stage: "设计"
+    - artifact: "api-design.md"
+      description: "API设计文档"
+      stage: "设计"
+    - artifact: "database-design.md"
+      description: "数据库设计文档"
+      stage: "设计"
+    - artifact: "test-plan.md"
+      description: "测试计划"
+      stage: "测试"
+    - artifact: "test-cases.md"
+      description: "测试用例"
+      stage: "测试"
+    - artifact: "deploy-plan.md"
+      description: "部署方案"
+      stage: "部署"

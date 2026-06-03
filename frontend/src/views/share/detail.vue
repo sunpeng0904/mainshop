@@ -148,7 +148,7 @@ import {
   unfollowUser
 } from '@/api/share'
 import { getImageUrl, getImageUrls } from '@/utils/image'
-import CommentPanel from '@/components/CommentPanel.vue'
+import CommentPanel from '@/components/comment-panel.vue'
 import dayjs from 'dayjs'
 import relativeTime from 'dayjs/plugin/relativeTime'
 import 'dayjs/locale/zh-cn'

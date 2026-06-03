@@ -4,6 +4,44 @@
 
 ---
 
+## 产物保留总则
+
+**项目只要存在新增需求或修改需求，整个项目周期都必须默认保留产物。**
+
+每个需求/变更在 `docs/` 下创建独立目录，目录名使用 kebab-case，与 `openspec/changes/` 中的变更名保持一致。
+
+### 目录结构规范
+
+```
+docs/<需求目录名>/
+├── 01-project-charter.md        # 项目章程（必须）
+├── 02-requirement-spec.md       # 需求规格说明书（必须）
+├── 02-requirement-review.md     # 需求审核报告（必须）
+├── 03-design-spec.md            # 设计文档（必须）
+├── 03-design-review.md          # 设计审核报告（必须）
+├── 04-development-review.md     # 开发审核报告（必须）
+├── 05-test-report.md            # 测试报告（必须）
+├── 06-deployment-report.md      # 部署报告（必须）
+└── 07-project-completion.md     # 项目总结报告（必须）
+```
+
+### 产物编号规则
+
+- 两位数字前缀表示阶段顺序（01-07）
+- 同一阶段多个产物使用相同前缀（如 02-requirement-spec.md 和 02-requirement-review.md）
+- 可选产物按需创建，编号顺延
+
+### 产物与 OpenSpec 的关系
+
+| OpenSpec artifact | 对应产物 | 目录 |
+|-------------------|----------|------|
+| proposal.md | 02-requirement-spec.md | docs/<name>/ |
+| design.md | 03-design-spec.md | docs/<name>/ |
+| specs/ | 02-requirement-spec.md（功能规格章节） | docs/<name>/ |
+| tasks.md | 04-development-review.md（实施记录） | docs/<name>/ |
+
+---
+
 ## 阶段一：项目认知
 
 在开始任何开发前，先了解项目全貌。

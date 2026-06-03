@@ -164,12 +164,18 @@
           <el-input v-model="addressForm.receiverName" placeholder="请输入收货人姓名" />
         </el-form-item>
         <el-form-item label="手机号" prop="receiverPhone">
-          <el-input v-model="addressForm.receiverPhone" placeholder="请输入手机号" />
+          <el-input v-model="addressForm.receiverPhone" placeholder="请输入手机号" maxlength="13" @input="handlePhoneInput" />
         </el-form-item>
         <el-form-item label="所在地区" required>
-          <el-input v-model="addressForm.province" placeholder="省" style="width: 100px; margin-right: 8px" />
-          <el-input v-model="addressForm.city" placeholder="市" style="width: 100px; margin-right: 8px" />
-          <el-input v-model="addressForm.district" placeholder="区" style="width: 100px" />
+          <el-select v-model="addressForm.provinceCode" placeholder="请选择省" style="width: 130px; margin-right: 8px" @change="handleProvinceChange">
+            <el-option v-for="p in provinces" :key="p.cde" :label="p.name" :value="p.cde" />
+          </el-select>
+          <el-select v-model="addressForm.cityCode" placeholder="请选择市" style="width: 130px; margin-right: 8px" @change="handleCityChange">
+            <el-option v-for="c in cities" :key="c.cde" :label="c.name" :value="c.cde" />
+          </el-select>
+          <el-select v-model="addressForm.districtCode" v-if="districts.length > 0" placeholder="请选择区" style="width: 130px">
+            <el-option v-for="d in districts" :key="d.cde" :label="d.name" :value="d.cde" />
+          </el-select>
         </el-form-item>
         <el-form-item label="详细地址" prop="detailAddress">
           <el-input
@@ -200,7 +206,7 @@ import { ref, reactive, computed, onMounted, watch } from 'vue'
 import { useStore } from 'vuex'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { updateUserInfo, changePassword } from '@/api/user'
-import { getAddressList, addAddress, updateAddress, deleteAddress, setDefaultAddress } from '@/api/address'
+import { getAddressList, addAddress, updateAddress, deleteAddress, setDefaultAddress, getProvinces, getCities, getDistricts } from '@/api/address'
 
 const store = useStore()
 
@@ -257,15 +263,20 @@ const passwordRules = {
 // 地址列表
 const addresses = ref([])
 
+// 省市区数据
+const provinces = ref([])
+const cities = ref([])
+const districts = ref([])
+
 // 地址表单
 const addressFormRef = ref()
 const addressForm = reactive({
   id: null,
   receiverName: '',
   receiverPhone: '',
-  province: '',
-  city: '',
-  district: '',
+  provinceCode: '',
+  cityCode: '',
+  districtCode: '',
   detailAddress: '',
   isDefault: 0
 })
@@ -277,6 +288,50 @@ const addressRules = {
     { pattern: /^1[3-9]\d{9}$/, message: '请输入正确的手机号', trigger: 'blur' }
   ],
   detailAddress: [{ required: true, message: '请输入详细地址', trigger: 'blur' }]
+}
+
+// 手机号格式化
+const handlePhoneInput = (value) => {
+  const cleaned = value.replace(/\D/g, '').slice(0, 11)
+  let formatted = ''
+  if (cleaned.length <= 3) {
+    formatted = cleaned
+  } else if (cleaned.length <= 7) {
+    formatted = `${cleaned.slice(0, 3)} ${cleaned.slice(3)}`
+  } else {
+    formatted = `${cleaned.slice(0, 3)} ${cleaned.slice(3, 7)} ${cleaned.slice(7)}`
+  }
+  addressForm.receiverPhone = formatted
+}
+
+// 省份选择
+const handleProvinceChange = async (provinceCode) => {
+  addressForm.cityCode = ''
+  addressForm.districtCode = ''
+  cities.value = []
+  districts.value = []
+  if (provinceCode) {
+    try {
+      const res = await getCities(provinceCode)
+      cities.value = res.data || []
+    } catch (e) {
+      console.error('获取城市失败:', e)
+    }
+  }
+}
+
+// 城市选择
+const handleCityChange = async (cityCode) => {
+  addressForm.districtCode = ''
+  districts.value = []
+  if (cityCode) {
+    try {
+      const res = await getDistricts(cityCode)
+      districts.value = res.data || []
+    } catch (e) {
+      console.error('获取区县失败:', e)
+    }
+  }
 }
 
 // 菜单选择
@@ -336,27 +391,60 @@ const handleAddAddress = () => {
     id: null,
     receiverName: '',
     receiverPhone: '',
-    province: '',
-    city: '',
-    district: '',
+    provinceCode: '',
+    cityCode: '',
+    districtCode: '',
     detailAddress: '',
     isDefault: 0
   })
+  cities.value = []
+  districts.value = []
   addressDialogVisible.value = true
 }
 
 // 编辑地址
-const handleEditAddress = (addr) => {
+const handleEditAddress = async (addr) => {
+  // 格式化手机号
+  const phone = addr.receiverPhone || ''
+  const cleaned = phone.replace(/\D/g, '')
+  let formattedPhone = ''
+  if (cleaned.length <= 3) {
+    formattedPhone = cleaned
+  } else if (cleaned.length <= 7) {
+    formattedPhone = `${cleaned.slice(0, 3)} ${cleaned.slice(3)}`
+  } else {
+    formattedPhone = `${cleaned.slice(0, 3)} ${cleaned.slice(3, 7)} ${cleaned.slice(7)}`
+  }
+
   Object.assign(addressForm, {
     id: addr.id,
     receiverName: addr.receiverName,
-    receiverPhone: addr.receiverPhone,
-    province: addr.province,
-    city: addr.city,
-    district: addr.district,
-    detailAddress: addr.detailAddress,
-    isDefault: addr.isDefault
+    receiverPhone: formattedPhone,
+    provinceCode: addr.prvcCde || addr.provinceCode || '',
+    cityCode: addr.cityCde || addr.cityCode || '',
+    districtCode: addr.dstrctCde || addr.districtCode || '',
+    detailAddress: addr.dtlAddr || addr.detailAddress || '',
+    isDefault: addr.dftIndc === 'Y' || addr.isDefault === 1 ? 1 : 0
   })
+
+  // 加载城市和区县
+  if (addressForm.provinceCode) {
+    try {
+      const cityRes = await getCities(addressForm.provinceCode)
+      cities.value = cityRes.data || []
+    } catch (e) {
+      console.error('获取城市失败:', e)
+    }
+  }
+  if (addressForm.cityCode) {
+    try {
+      const districtRes = await getDistricts(addressForm.cityCode)
+      districts.value = districtRes.data || []
+    } catch (e) {
+      console.error('获取区县失败:', e)
+    }
+  }
+
   addressDialogVisible.value = true
 }
 
@@ -366,10 +454,21 @@ const handleSaveAddress = async () => {
     await addressFormRef.value.validate()
     saving.value = true
 
+    // 字段映射：前端 → 后端
+    const submitData = {
+      rcvrName: addressForm.receiverName,
+      rcvrTel: addressForm.receiverPhone.replace(/\s/g, ''),
+      prvcCde: addressForm.provinceCode,
+      cityCde: addressForm.cityCode,
+      dstrctCde: addressForm.districtCode,
+      dtlAddr: addressForm.detailAddress,
+      dftIndc: addressForm.isDefault ? 'Y' : 'N'
+    }
+
     if (addressForm.id) {
-      await updateAddress(addressForm)
+      await updateAddress({ id: addressForm.id, ...submitData })
     } else {
-      await addAddress(addressForm)
+      await addAddress(submitData)
     }
 
     ElMessage.success('保存成功')
@@ -426,7 +525,19 @@ onMounted(() => {
       gender: userInfo.value.gender || 0
     })
   }
+  // 预加载省份数据
+  fetchProvinces()
 })
+
+// 获取省份列表
+const fetchProvinces = async () => {
+  try {
+    const res = await getProvinces()
+    provinces.value = res.data || []
+  } catch (e) {
+    console.error('获取省份失败:', e)
+  }
+}
 </script>
 
 <style lang="scss" scoped>

@@ -42,7 +42,19 @@
       "Bash(mvn test *)",
       "Bash(npm test *)",
       "Bash(java -jar target/*.jar)",
-      "Bash(npm run *)"
+      "Bash(npm run *)",
+      "Bash(python scaffold.py --project online-mall --action status)",
+      "Bash(python *)",
+      "Bash(mv src/layout/components/Header.vue src/layout/components/header.vue)",
+      "Bash(mv src/layout/components/Sidebar.vue src/layout/components/sidebar.vue)",
+      "Bash(break)",
+      "Bash(npx vue-cli-service *)",
+      "Bash(where mysql *)",
+      "Read(//c/Program Files/MySQL/MySQL Server 8.0/bin/**)",
+      "Read(//c/mysql/bin/**)",
+      "Bash(mvn exec:java -Dexec.mainClass=\"com.online.mall.util.SqlRunner\")",
+      "Bash(git rev-parse *)",
+      "Bash(echo \"exit: $?\")"
     ]
   }
 }

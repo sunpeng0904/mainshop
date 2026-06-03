@@ -299,7 +299,7 @@ import {
   Check, Flag, Food, Place, Compass
 } from '@element-plus/icons-vue'
 import * as echarts from 'echarts'
-import MapContainer from '@/components/MapContainer.vue'
+import MapContainer from '@/components/map-container.vue'
 import { getRouteDetail, getRouteTrack, favoriteRoute, unfavoriteRoute, getRouteReviews } from '@/api/hiking'
 
 const route = useRoute()

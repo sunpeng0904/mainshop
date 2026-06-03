@@ -11,20 +11,17 @@ import lombok.Data;
 public class RegionVO {
 
     @Schema(description = "区域ID")
-    private Long id;
+    private String id;
 
     @Schema(description = "区域编码")
-    private String regionCode;
+    private String cde;
 
     @Schema(description = "区域名称")
-    private String regionName;
+    private String name;
 
     @Schema(description = "父级编码")
-    private String parentCode;
+    private String prntCde;
 
     @Schema(description = "层级: 1-省 2-市 3-区")
-    private Integer level;
-
-    @Schema(description = "排序")
-    private Integer sort;
+    private Integer lvl;
 }

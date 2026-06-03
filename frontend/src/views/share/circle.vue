@@ -111,7 +111,7 @@ import {
   getFollowers
 } from '@/api/share'
 import { getImageUrl } from '@/utils/image'
-import ShareCard from '@/components/ShareCard.vue'
+import ShareCard from '@/components/share-card.vue'
 
 const router = useRouter()
 const route = useRoute()

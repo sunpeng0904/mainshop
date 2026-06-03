@@ -208,8 +208,8 @@ import { useStore } from 'vuex'
 import { useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { Search, ArrowRight } from '@element-plus/icons-vue'
-import ProductCard from '@/components/ProductCard.vue'
-import ProductPreview from '@/components/ProductPreview.vue'
+import ProductCard from '@/components/product-card.vue'
+import ProductPreview from '@/components/product-preview.vue'
 import { ElMessage } from 'element-plus'
 
 const { t } = useI18n()

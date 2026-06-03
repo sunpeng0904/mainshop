@@ -33,6 +33,7 @@
     "vuex-persistedstate": "^4.1.0"
   },
   "devDependencies": {
+    "@playwright/test": "^1.60.0",
     "@typescript-eslint/eslint-plugin": "^6.15.0",
     "@typescript-eslint/parser": "^6.15.0",
     "@vue/cli-service": "^5.0.0",
