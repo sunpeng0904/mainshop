@@ -74,33 +74,31 @@
               新增地址
             </el-button>
           </div>
-          <div class="address-list">
-            <div v-for="addr in addresses" :key="addr.id" class="address-item">
-              <div class="address-info">
-                <span class="name">{{ addr.receiverName }}</span>
-                <span class="phone">{{ addr.receiverPhone }}</span>
-                <el-tag v-if="addr.isDefault === 1" type="success" size="small">默认</el-tag>
-              </div>
-              <div class="address-detail">
-                {{ addr.fullAddress || `${addr.province}${addr.city}${addr.district}${addr.detailAddress}` }}
-              </div>
-              <div class="address-actions">
-                <el-button text type="primary" @click="handleEditAddress(addr)">
-                  编辑
-                </el-button>
-                <el-button text type="danger" @click="handleDeleteAddress(addr.id)">
-                  删除
-                </el-button>
-                <el-button
-                  v-if="addr.isDefault !== 1"
-                  text
-                  @click="handleSetDefault(addr.id)"
-                >
-                  设为默认
-                </el-button>
-              </div>
+          <div class="address-table">
+            <div class="address-header">
+              <span class="col-name">收货人</span>
+              <span class="col-phone">手机号</span>
+              <span class="col-address">收货地址</span>
+              <span class="col-actions">操作</span>
             </div>
-            <el-empty v-if="addresses.length === 0" description="暂无收货地址" />
+            <div v-for="addr in addresses" :key="addr.id" class="address-row">
+              <span class="col-name">
+                {{ addr.rcvrName }}
+                <el-tag v-if="addr.dftIndc === 'Y'" type="success" size="small" style="margin-left: 6px">默认</el-tag>
+              </span>
+              <span class="col-phone">{{ addr.rcvrTel }}</span>
+              <span class="col-address">
+                {{ addr.fullAddr || `${addr.prvcName || ''}${addr.cityName || ''}${addr.dstrctName || ''}${addr.dtlAddr || ''}` }}
+              </span>
+              <span class="col-actions">
+                <el-button text type="primary" @click="handleEditAddress(addr)">编辑</el-button>
+                <el-button text type="danger" @click="handleDeleteAddress(addr.id)">删除</el-button>
+                <el-button v-if="addr.dftIndc !== 'Y'" text @click="handleSetDefault(addr.id)">设为默认</el-button>
+              </span>
+            </div>
+            <div v-if="addresses.length === 0" class="address-empty">
+              <el-empty description="暂无收货地址" />
+            </div>
           </div>
         </div>
 
@@ -176,6 +174,7 @@
           <el-select v-model="addressForm.districtCode" v-if="districts.length > 0" placeholder="请选择区" style="width: 130px">
             <el-option v-for="d in districts" :key="d.cde" :label="d.name" :value="d.cde" />
           </el-select>
+          <span v-if="addressForm.cityCode && districts.length === 0" style="color: #909399; font-size: 12px; margin-left: 8px">该城市暂无区县数据</span>
         </el-form-item>
         <el-form-item label="详细地址" prop="detailAddress">
           <el-input
@@ -285,7 +284,16 @@ const addressRules = {
   receiverName: [{ required: true, message: '请输入收货人姓名', trigger: 'blur' }],
   receiverPhone: [
     { required: true, message: '请输入手机号', trigger: 'blur' },
-    { pattern: /^1[3-9]\d{9}$/, message: '请输入正确的手机号', trigger: 'blur' }
+    {
+      validator: (rule, value, callback) => {
+        if (value && !/^\d{11}$/.test(value.replace(/\s/g, ''))) {
+          callback(new Error('请输入正确的手机号'))
+        } else {
+          callback()
+        }
+      },
+      trigger: 'blur'
+    }
   ],
   detailAddress: [{ required: true, message: '请输入详细地址', trigger: 'blur' }]
 }
@@ -405,7 +413,7 @@ const handleAddAddress = () => {
 // 编辑地址
 const handleEditAddress = async (addr) => {
   // 格式化手机号
-  const phone = addr.receiverPhone || ''
+  const phone = addr.rcvrTel || ''
   const cleaned = phone.replace(/\D/g, '')
   let formattedPhone = ''
   if (cleaned.length <= 3) {
@@ -416,34 +424,39 @@ const handleEditAddress = async (addr) => {
     formattedPhone = `${cleaned.slice(0, 3)} ${cleaned.slice(3, 7)} ${cleaned.slice(7)}`
   }
 
-  Object.assign(addressForm, {
-    id: addr.id,
-    receiverName: addr.receiverName,
-    receiverPhone: formattedPhone,
-    provinceCode: addr.prvcCde || addr.provinceCode || '',
-    cityCode: addr.cityCde || addr.cityCode || '',
-    districtCode: addr.dstrctCde || addr.districtCode || '',
-    detailAddress: addr.dtlAddr || addr.detailAddress || '',
-    isDefault: addr.dftIndc === 'Y' || addr.isDefault === 1 ? 1 : 0
-  })
+  // 先加载城市和区县数据，再赋值表单，确保下拉框能正确回显
+  const provinceCode = addr.prvcCde || ''
+  const cityCode = addr.cityCde || ''
+  const districtCode = addr.dstrctCde || ''
 
-  // 加载城市和区县
-  if (addressForm.provinceCode) {
+  if (provinceCode) {
     try {
-      const cityRes = await getCities(addressForm.provinceCode)
+      const cityRes = await getCities(provinceCode)
       cities.value = cityRes.data || []
     } catch (e) {
       console.error('获取城市失败:', e)
     }
   }
-  if (addressForm.cityCode) {
+  if (cityCode) {
     try {
-      const districtRes = await getDistricts(addressForm.cityCode)
+      const districtRes = await getDistricts(cityCode)
       districts.value = districtRes.data || []
     } catch (e) {
       console.error('获取区县失败:', e)
     }
   }
+
+  // 数据加载完成后再赋值，确保 el-select 能匹配到选项的 label
+  Object.assign(addressForm, {
+    id: addr.id,
+    receiverName: addr.rcvrName || '',
+    receiverPhone: formattedPhone,
+    provinceCode,
+    cityCode,
+    districtCode,
+    detailAddress: addr.dtlAddr || '',
+    isDefault: addr.dftIndc === 'Y' ? 1 : 0
+  })
 
   addressDialogVisible.value = true
 }
@@ -541,6 +554,8 @@ const fetchProvinces = async () => {
 </script>
 
 <style lang="scss" scoped>
+@import '@/styles/variables.scss';
+
 .user-center-container {
   max-width: 1200px;
   margin: 0 auto;
@@ -549,12 +564,12 @@ const fetchProvinces = async () => {
 .user-menu {
   .user-avatar {
     text-align: center;
-    padding: 24px 0;
-    border-bottom: 1px solid #ebeef5;
+    padding: $spacing-lg 0;
+    border-bottom: 1px solid $border-color-lighter;
 
     h3 {
-      margin-top: 12px;
-      font-size: 16px;
+      margin-top: $spacing-sm;
+      font-size: $font-size-medium;
     }
   }
 
@@ -568,18 +583,18 @@ const fetchProvinces = async () => {
 }
 
 .card-title {
-  font-size: 18px;
+  font-size: $font-size-large;
   font-weight: 600;
-  margin-bottom: 24px;
-  padding-bottom: 12px;
-  border-bottom: 1px solid #ebeef5;
+  margin-bottom: $spacing-lg;
+  padding-bottom: $spacing-sm;
+  border-bottom: 1px solid $border-color-lighter;
 }
 
 .card-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 20px;
+  margin-bottom: $spacing-lg;
 
   .card-title {
     margin-bottom: 0;
@@ -588,40 +603,71 @@ const fetchProvinces = async () => {
   }
 }
 
-.address-list {
-  .address-item {
-    padding: 16px;
-    border: 1px solid #ebeef5;
-    border-radius: 4px;
-    margin-bottom: 12px;
+.address-table {
+  .address-header,
+  .address-row {
+    display: grid;
+    grid-template-columns: 130px 130px 1fr 180px;
+    align-items: center;
+    gap: $spacing-md;
+    padding: $spacing-sm $spacing-md;
+  }
+
+  .address-header {
+    background: $bg-color;
+    border-radius: $border-radius-large $border-radius-large 0 0;
+    border-bottom: 1px solid $border-color-lighter;
+    font-size: $font-size-base;
+    font-weight: 600;
+    color: $text-primary;
+  }
+
+  .address-row {
+    border: 1px solid $border-color-lighter;
+    border-top: none;
+    transition: all $transition-duration ease;
+    background: #fff;
+
+    &:last-of-type {
+      border-radius: 0 0 $border-radius-large $border-radius-large;
+    }
 
     &:hover {
-      border-color: #409EFF;
+      background: $bg-color;
+      box-shadow: $box-shadow-light;
     }
 
-    .address-info {
-      margin-bottom: 8px;
-
-      .name {
-        font-weight: 500;
-        margin-right: 16px;
-      }
-
-      .phone {
-        color: #606266;
-        margin-right: 12px;
-      }
+    .col-name {
+      font-weight: 500;
+      color: $text-primary;
+      display: flex;
+      align-items: center;
     }
 
-    .address-detail {
-      color: #909399;
-      font-size: 14px;
-      margin-bottom: 12px;
+    .col-phone {
+      color: $text-regular;
     }
 
-    .address-actions {
-      text-align: right;
+    .col-address {
+      color: $text-secondary;
+      font-size: $font-size-base;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
     }
+
+    .col-actions {
+      display: flex;
+      gap: $spacing-xs;
+    }
+  }
+
+  .address-empty {
+    grid-column: 1 / -1;
+    border: 1px solid $border-color-lighter;
+    border-top: none;
+    border-radius: 0 0 $border-radius-large $border-radius-large;
+    padding: $spacing-xl 0;
   }
 }
 </style>

@@ -101,8 +101,8 @@
         <div class="address-section">
           <h4>收货地址</h4>
           <div v-if="selectedAddress" class="selected-address" @click="showAddressDialog = true">
-            <p><strong>{{ selectedAddress.receiverName }}</strong> {{ selectedAddress.receiverPhone }}</p>
-            <p class="text-muted">{{ selectedAddress.fullAddress }}</p>
+            <p><strong>{{ selectedAddress.rcvrName }}</strong> {{ selectedAddress.rcvrTel }}</p>
+            <p class="text-muted">{{ selectedAddress.fullAddr }}</p>
           </div>
           <el-button v-else type="primary" text @click="showAddressDialog = true">
             选择收货地址
@@ -165,9 +165,9 @@
           :class="{ active: selectedAddress?.id === addr.id }"
           @click="selectAddress(addr)"
         >
-          <p><strong>{{ addr.receiverName }}</strong> {{ addr.receiverPhone }}</p>
-          <p class="text-muted">{{ addr.fullAddress }}</p>
-          <el-tag v-if="addr.isDefault === 1" type="success" size="small">默认</el-tag>
+          <p><strong>{{ addr.rcvrName }}</strong> {{ addr.rcvrTel }}</p>
+          <p class="text-muted">{{ addr.fullAddr }}</p>
+          <el-tag v-if="addr.dftIndc === 'Y'" type="success" size="small">默认</el-tag>
         </div>
       </div>
     </el-dialog>
@@ -251,7 +251,7 @@ const fetchAddresses = async () => {
 
     // 获取默认地址
     if (addressList.value.length > 0) {
-      const defaultAddr = addressList.value.find(a => a.isDefault === 1)
+      const defaultAddr = addressList.value.find(a => a.dftIndc === 'Y')
       selectedAddress.value = defaultAddr || addressList.value[0]
     }
   } catch (error) {
@@ -371,9 +371,9 @@ const submitOrder = async () => {
       addressId: selectedAddress.value.id,
       remark: remark.value,
       payType: payType.value,
-      receiverName: selectedAddress.value.receiverName,
-      receiverPhone: selectedAddress.value.receiverPhone,
-      receiverAddress: selectedAddress.value.fullAddress
+      receiverName: selectedAddress.value.rcvrName,
+      receiverPhone: selectedAddress.value.rcvrTel,
+      receiverAddress: selectedAddress.value.fullAddr
     }
 
     const orderRes = await createOrder(orderData)
