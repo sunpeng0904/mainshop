@@ -172,14 +172,16 @@ test.describe('收货地址优化验证', () => {
       await page.waitForTimeout(1000)
     }
 
-    // 过滤掉网络错误
+    // 过滤掉网络错误和后端未启动导致的错误
     const componentErrors = errors.filter(e =>
       !e.includes('NetworkError') &&
       !e.includes('fetch') &&
       !e.includes('api') &&
       !e.includes('404') &&
+      !e.includes('500') &&
       !e.includes('Request failed') &&
-      !e.includes('GET http')
+      !e.includes('GET http') &&
+      !e.includes('Failed to load resource')
     )
 
     expect(componentErrors).toHaveLength(0)

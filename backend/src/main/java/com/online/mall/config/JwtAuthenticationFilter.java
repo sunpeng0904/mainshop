@@ -119,14 +119,17 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                path.startsWith("/user/register") ||
                path.startsWith("/user/check") ||
                path.startsWith("/user/password/reset") ||
-               path.startsWith("/product/") ||
-               path.startsWith("/category/") ||
-               path.startsWith("/region/") ||
-               path.startsWith("/images/") ||
-               path.startsWith("/uploads/") ||
+               path.equals("/user/health") ||
+               path.startsWith("/product") ||
+               path.startsWith("/category") ||
+               path.startsWith("/region") ||
+               path.startsWith("/images") ||
+               path.startsWith("/uploads") ||
+               path.startsWith("/hiking") ||
                path.startsWith("/api-docs") ||
                path.startsWith("/swagger-ui") ||
                path.startsWith("/webjars") ||
-               path.startsWith("/v3/api-docs");
+               path.startsWith("/v3/api-docs") ||
+               path.equals("/error");
     }
 }

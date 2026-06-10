@@ -39,7 +39,10 @@ public class SecurityConfig {
     }
 
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http, JwtAuthenticationFilter jwtAuthenticationFilter) throws Exception {
+    public SecurityFilterChain filterChain(HttpSecurity http,
+                                           JwtAuthenticationFilter jwtAuthenticationFilter,
+                                           CustomAuthenticationEntryPoint authenticationEntryPoint,
+                                           CustomAccessDeniedHandler accessDeniedHandler) throws Exception {
         http
             // 禁用CSRF
             .csrf().disable()
@@ -49,6 +52,11 @@ public class SecurityConfig {
 
             // 禁用session
             .and().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+
+            // 自定义未认证/未授权响应（返回JSON而非HTML）
+            .and().exceptionHandling()
+                .authenticationEntryPoint(authenticationEntryPoint)
+                .accessDeniedHandler(accessDeniedHandler)
 
             // 配置请求授权
             .and().authorizeRequests()
