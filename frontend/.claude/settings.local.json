@@ -44,7 +44,12 @@
       "Bash(pip install *)",
       "Bash(python *)",
       "Bash(git rm *)",
-      "Bash(echo \"Exit code: $?\")"
+      "Bash(echo \"Exit code: $?\")",
+      "Bash(npx playwright *)",
+      "Bash(mvn spring-boot:run -DskipTests)",
+      "Bash(npx vue-cli-service *)",
+      "Bash(taskkill //F //FI \"WINDOWTITLE eq *spring-boot*\")",
+      "Bash(taskkill //F //FI \"IMAGENAME eq java.exe\")"
     ],
     "additionalDirectories": [
       "C:\\Users\\hspcadmin\\Desktop",

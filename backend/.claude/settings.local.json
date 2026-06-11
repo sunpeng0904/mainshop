@@ -54,7 +54,23 @@
       "Read(//c/mysql/bin/**)",
       "Bash(mvn exec:java -Dexec.mainClass=\"com.online.mall.util.SqlRunner\")",
       "Bash(git rev-parse *)",
-      "Bash(echo \"exit: $?\")"
+      "Bash(echo \"exit: $?\")",
+      "Bash(where git *)",
+      "Read(//c/Program Files \\(x86\\)/Git/cmd/**)",
+      "Read(//d/Git/cmd/**)",
+      "Bash(cmd.exe *)",
+      "Bash(powershell.exe *)",
+      "Bash('/c/Program Files/Git/cmd/git.exe' status --short)",
+      "Bash('/c/Program Files/Git/cmd/git.exe' log --oneline -3)",
+      "Bash('/c/Program Files/Git/cmd/git.exe' add src/main/java/com/online/mall/dto/AddressDTO.java src/main/java/com/online/mall/dto/OrderCreateDTO.java src/main/java/com/online/mall/entity/Region.java src/main/java/com/online/mall/entity/UserAddr.java src/main/java/com/online/mall/service/impl/UserAddrServiceImpl.java src/main/resources/data.sql src/main/resources/db/insert_all_regions.py src/main/resources/db/insert_districts.py src/main/resources/i18n/ValidationMessages_en_US.properties src/main/resources/i18n/ValidationMessages_zh_CN.properties src/main/resources/i18n/messages_en_US.properties src/main/resources/i18n/messages_zh_CN.properties src/test/java/com/online/mall/service/impl/UserAddrServiceImplTest.java)",
+      "Bash('/c/Program Files/Git/cmd/git.exe' commit -m ' *)",
+      "Bash('/c/Program Files/Git/cmd/git.exe' commit -m 'fix: 地址模块后端修复 *)",
+      "Bash('/c/Program Files/Git/cmd/git.exe' add ../frontend/src/views/user/center.vue ../frontend/src/views/cart/index.vue ../frontend/src/styles/index.scss)",
+      "Bash('/c/Program Files/Git/cmd/git.exe' commit -m 'fix: 前端地址字段名与后端 AddressVO 对齐 *)",
+      "Bash('/c/Program Files/Git/cmd/git.exe' push)",
+      "Bash(cd /tmp)",
+      "Bash(jar xf *)",
+      "Read(//tmp/com/baomidou/mybatisplus/extension/service/impl/**)"
     ]
   }
 }
